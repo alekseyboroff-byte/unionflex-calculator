@@ -7,7 +7,262 @@
 <meta name="theme-color" content="#0b6e8a">
 <title>UNIONFLEX CALCULATOR</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e8a'/%3E%3Ctext x='16' y='21' font-family='Arial' font-weight='700' font-size='13' fill='white' text-anchor='middle'%3EUF%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/app.css">
+<style>
+/* UNIONFLEX CALCULATOR — стили интерфейса */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e3e8ef;
+  --border-strong: #cbd4e1;
+  --text: #16202e;
+  --text-2: #4b5768;
+  --text-3: #7b8697;
+  --accent: #0b6e8a;
+  --accent-strong: #09576d;
+  --accent-soft: #e3f2f6;
+  --accent-text: #075066;
+  --ok: #1a7f4e; --ok-soft: #e5f5ec;
+  --warn: #8a5a00; --warn-soft: #fff4d9;
+  --err: #b42318; --err-soft: #fdecea;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 4px 16px rgba(16, 24, 40, .06);
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #171e27; --surface-2: #1c2530; --border: #2a3542; --border-strong: #3a4757;
+    --text: #e8edf3; --text-2: #b3bdc9; --text-3: #8894a3;
+    --accent: #38b2d4; --accent-strong: #62c6e2; --accent-soft: #123845; --accent-text: #9fdcee;
+    --ok: #4cc38a; --ok-soft: #13301f; --warn: #f0b429; --warn-soft: #33290f; --err: #ff7b72; --err-soft: #3a1714;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #171e27; --surface-2: #1c2530; --border: #2a3542; --border-strong: #3a4757;
+  --text: #e8edf3; --text-2: #b3bdc9; --text-3: #8894a3;
+  --accent: #38b2d4; --accent-strong: #62c6e2; --accent-soft: #123845; --accent-text: #9fdcee;
+  --ok: #4cc38a; --ok-soft: #13301f; --warn: #f0b429; --warn-soft: #33290f; --err: #ff7b72; --err-soft: #3a1714;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--accent); }
+.icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- шапка ---------- */
+.topbar { position: sticky; top: 0; z-index: 20; background: var(--surface); border-bottom: 1px solid var(--border); }
+.topbar-in { max-width: 1240px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); margin-right: auto; }
+.brand-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 700; letter-spacing: .5px; font-size: 13px; }
+.brand-name { font-weight: 700; letter-spacing: .6px; font-size: 15px; }
+.brand-name small { display: block; font-weight: 500; letter-spacing: .2px; color: var(--text-3); font-size: 11px; }
+.theme-btn { min-height: 36px; padding: 0 10px; gap: 6px; font-size: 13px; color: var(--text-2); }
+@media (max-width: 640px) { .theme-btn { width: 38px; padding: 0; } }
+.toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); cursor: pointer; user-select: none; }
+.switch { position: relative; width: 38px; height: 22px; border-radius: 11px; background: var(--border-strong); transition: background .15s; flex: none; }
+.switch::after { content: ""; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .15s; }
+.toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.toggle input:checked + .switch { background: var(--accent); }
+.toggle input:checked + .switch::after { transform: translateX(16px); }
+.toggle input:focus-visible + .switch { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: var(--radius);
+  border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; font-weight: 600; font-size: 14px; text-decoration: none; color: var(--text); }
+.btn:hover { background: var(--surface-2); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn.danger, .btn.ghost.danger { border-color: var(--err); color: var(--err); background: var(--err-soft); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: var(--accent-strong); }
+.btn.ghost { border-color: transparent; background: transparent; }
+.btn.ghost:hover { background: var(--surface-2); }
+.btn.small { min-height: 34px; padding: 0 12px; font-size: 13px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+main { max-width: 1240px; margin: 0 auto; padding: 24px 20px 96px; }
+
+/* ---------- главная ---------- */
+.hero { padding: 24px 0 8px; }
+.hero h1 { font-size: 34px; line-height: 1.15; margin: 0 0 8px; letter-spacing: -.3px; }
+.hero p { font-size: 18px; color: var(--text-2); margin: 0; max-width: 720px; }
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); margin: 32px 0 12px; font-weight: 600; }
+.goals { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.goal { display: flex; gap: 14px; align-items: flex-start; text-align: left; padding: 18px; border-radius: var(--radius-lg); background: var(--surface);
+  border: 1px solid var(--border); cursor: pointer; box-shadow: var(--shadow); transition: border-color .15s, transform .15s; width: 100%; }
+.goal:hover { border-color: var(--accent); transform: translateY(-1px); }
+.goal:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.goal-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; flex: none; }
+.goal-ic .icon { width: 24px; height: 24px; }
+.goal b { display: block; font-size: 16px; margin-bottom: 2px; }
+.goal span { color: var(--text-2); font-size: 14px; }
+.recent { display: grid; gap: 8px; }
+.recent-item, .hist-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.recent-item { cursor: pointer; }
+.recent-item:hover { border-color: var(--accent); }
+.recent-item .big, .hist-item .big { font-weight: 700; font-size: 18px; margin-left: auto; white-space: nowrap; }
+.muted { color: var(--text-3); font-size: 13px; }
+.note-box { margin-top: 28px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); font-size: 13px; }
+
+/* ---------- экран расчёта ---------- */
+.crumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.calc-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.calc-head h1 { font-size: 26px; margin: 0; letter-spacing: -.2px; }
+.calc-head p { margin: 2px 0 0; color: var(--text-2); }
+.calc-grid { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 20px; align-items: start; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
+.step { padding: 18px 20px 20px; margin-bottom: 16px; }
+.step-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.step-n { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+.step-n.done { background: var(--ok); }
+.step-h h2 { font-size: 17px; margin: 0; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+.field > label, .field > .lbl { font-size: 13px; font-weight: 600; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+.help { position: relative; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border-strong); color: var(--text-3);
+  font-size: 11px; font-weight: 700; cursor: help; background: var(--surface); }
+.help:focus-visible { outline: 2px solid var(--accent); }
+.help .tip { display: none; position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); width: 260px; padding: 10px 12px; border-radius: 8px;
+  background: var(--text); color: var(--surface); font-weight: 400; font-size: 12.5px; line-height: 1.45; z-index: 30; box-shadow: var(--shadow); }
+.help:hover .tip, .help:focus .tip { display: block; }
+.inp { display: flex; align-items: stretch; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); min-height: 44px; overflow: hidden; }
+.inp:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.inp input, .inp select { border: 0; outline: 0; background: transparent; padding: 0 12px; flex: 1; min-width: 0; font-size: 16px; }
+.inp select { cursor: pointer; }
+.inp .unit { display: grid; place-items: center; padding: 0 12px; color: var(--text-3); background: var(--surface-2); border-left: 1px solid var(--border); font-size: 13px; white-space: nowrap; }
+.field.invalid .inp { border-color: var(--err); }
+.ferr { color: var(--err); font-size: 12.5px; }
+.fhint { color: var(--text-3); font-size: 12.5px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { min-height: 40px; padding: 6px 14px; max-width: 100%; text-align: left; line-height: 1.25; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; font-size: 14px; }
+.seg button:hover { border-color: var(--accent); }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; }
+.chip:hover { border-color: var(--accent); color: var(--accent-text); }
+.mats { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.mat { text-align: left; padding: 14px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; }
+.mat[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent) inset; }
+.mat b { display: block; font-size: 15px; }
+.mat span { display: block; color: var(--text-2); font-size: 12.5px; margin-top: 2px; }
+.mat .props { color: var(--text-3); font-size: 12px; margin-top: 6px; }
+
+/* ---------- результат ---------- */
+.result { position: sticky; top: 76px; padding: 20px; }
+.res-label { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); font-weight: 600; }
+.res-big { font-size: 56px; font-weight: 800; line-height: 1.05; letter-spacing: -1px; margin: 6px 0 2px; color: var(--accent-text); }
+.res-big small { font-size: 24px; font-weight: 700; }
+.res-product { font-weight: 700; font-size: 16px; }
+.res-sub { color: var(--text-2); font-size: 14px; }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 14px 0; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 14px; }
+.kv dt { color: var(--text-2); }
+.kv dd { margin: 0; font-weight: 700; text-align: right; }
+.explain { font-size: 14px; color: var(--text); background: var(--surface-2); border-radius: var(--radius); padding: 12px 14px; margin: 12px 0; }
+.msg { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: var(--radius); font-size: 13.5px; margin: 8px 0; }
+.msg .icon { width: 18px; height: 18px; margin-top: 1px; }
+.msg.warn { background: var(--warn-soft); color: var(--warn); }
+.msg.err { background: var(--err-soft); color: var(--err); }
+.msg.ok { background: var(--ok-soft); color: var(--ok); }
+.msg.info { background: var(--accent-soft); color: var(--accent-text); }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.actions .primary { grid-column: 1 / -1; }
+.empty-res { color: var(--text-2); font-size: 14px; }
+.empty-res ul { margin: 8px 0 0; padding-left: 18px; }
+.parts { display: grid; gap: 10px; margin-top: 8px; }
+.part { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.part .res-big { font-size: 36px; }
+
+/* ---------- инженерный режим ---------- */
+.eng { margin-top: 16px; padding: 18px 20px; }
+.eng h3 { font-size: 15px; margin: 18px 0 8px; }
+.eng h3:first-child { margin-top: 0; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.tbl th, .tbl td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tbl th { color: var(--text-3); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+.tbl td.num { white-space: nowrap; font-weight: 600; }
+.formula { font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; background: var(--surface-2); border-radius: 6px; padding: 6px 8px; display: block; margin: 4px 0; overflow-x: auto; }
+.src { color: var(--text-3); font-size: 12px; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { position: relative; padding: 10px 0 10px 34px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.steps li::before { counter-increment: st; content: counter(st); position: absolute; left: 0; top: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border-strong); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--text-2); }
+
+/* ---------- мобильная плашка ---------- */
+.mbar { display: none; }
+[hidden] { display: none !important; }
+@media (max-width: 960px) {
+  .calc-grid { grid-template-columns: minmax(0, 1fr); }
+  .result { position: static; }
+  .mbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--border);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); align-items: center; gap: 12px; box-shadow: 0 -4px 16px rgba(0,0,0,.08); }
+  .mbar .v { font-size: 26px; font-weight: 800; color: var(--accent-text); }
+  .mbar .l { font-size: 12px; color: var(--text-3); line-height: 1.2; }
+  .mbar .btn { margin-left: auto; }
+}
+@media (max-width: 600px) {
+  main { padding: 16px 16px 110px; }
+  .topbar-in { padding: 8px 16px; }
+  .brand-name small { display: none; }
+  .hero h1 { font-size: 26px; }
+  .hero p { font-size: 16px; }
+  .calc-head h1 { font-size: 21px; }
+  .step { padding: 16px; }
+  .fields { grid-template-columns: 1fr; }
+  .res-big { font-size: 48px; }
+  .toggle .tl { display: none; }
+  .hide-sm { display: none !important; }
+  .goal { padding: 14px; }
+  .tbl td.num { white-space: normal; }
+  .tbl td, .tbl th { padding: 6px 4px; overflow-wrap: anywhere; }
+  .eng { padding: 14px; }
+}
+.eng { overflow-x: auto; }
+
+/* ---------- история ---------- */
+.hist-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+.hist-list { display: grid; gap: 8px; }
+.hist-item .meta { min-width: 0; }
+.hist-item .meta b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist-item .ops { display: flex; gap: 4px; }
+
+/* ---------- отчёт для печати ---------- */
+#report { display: none; }
+@media print {
+  @page { size: A4; margin: 14mm 14mm 16mm; }
+  body { background: #fff; color: #000; font-size: 10.5pt; }
+  .topbar, main, .mbar { display: none !important; }
+  #report { display: block; }
+}
+/* веб-версия (печать недоступна): отчёт показывается на экране как лист */
+body.show-report main, body.show-report .mbar { display: none !important; }
+body.show-report #report { display: block; padding-block: 16px 40px; padding-inline: 16px; }
+.rep-bar { max-width: 860px; margin: 0 auto 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.rep-bar .muted { color: var(--text-3); font-size: 13px; flex: 1 1 260px; }
+body.show-report .rep { max-width: 860px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.12); overflow-wrap: anywhere; }
+body.show-report .rep table { table-layout: fixed; }
+@media (max-width: 640px) { body.show-report .rep { padding: 14px; font-size: 10pt; } .rep .rep-result { flex-wrap: wrap; gap: 10px; } }
+@media print { .rep-bar { display: none !important; } }
+.rep { font: 10.5pt/1.45 "Segoe UI", Arial, sans-serif; color: #000; }
+.rep-head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #0b6e8a; padding-bottom: 8px; margin-bottom: 12px; }
+.rep-head h1 { font-size: 17pt; margin: 0; letter-spacing: .5px; }
+.rep-head .rep-date { font-size: 10pt; color: #333; text-align: right; }
+.rep h2 { font-size: 12pt; margin: 14px 0 6px; color: #0b4f63; border-bottom: 1px solid #cfd8e3; padding-bottom: 3px; }
+.rep table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+.rep td, .rep th { border: 1px solid #cfd8e3; padding: 4px 6px; text-align: left; vertical-align: top; }
+.rep th { background: #eef3f7; }
+.rep .rep-result { display: flex; gap: 24px; align-items: center; border: 1.5px solid #0b6e8a; border-radius: 8px; padding: 10px 14px; margin: 10px 0; page-break-inside: avoid; }
+.rep .rep-result .v { font-size: 26pt; font-weight: 800; color: #0b4f63; }
+.rep .formula { background: #f3f6f9; font-size: 9pt; }
+.rep .foot { margin-top: 18px; font-size: 8.5pt; color: #555; border-top: 1px solid #cfd8e3; padding-top: 6px; }
+.rep section, .rep tr { page-break-inside: avoid; }
+
+</style>
 <script>
   // Тема до отрисовки, чтобы не было вспышки: сохранённый выбор, иначе — настройка системы
   try { var t = localStorage.getItem('uf.theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
@@ -35,13 +290,2199 @@
 <div class="mbar" id="mbar" hidden></div>
 <div id="report" aria-hidden="true"></div>
 
-<script src="src/data/sp61.js"></script>
-<script src="src/data/materials.js"></script>
-<script src="src/data/pipes.js"></script>
-<script src="src/core/base.js"></script>
-<script src="src/core/selection.js"></script>
-<script src="src/core/calcs.js"></script>
-<script src="src/ui/icons.js"></script>
-<script src="src/ui/app.js"></script>
+<script>/* src/data/sp61.js */
+/*
+ * Нормативные данные СП 61.13330.2012 «Тепловая изоляция оборудования и трубопроводов»
+ * (с Изменениями N 1, 2). Таблицы сверены с текстом СП (CALCULATION_METHOD.md, §3.3, §0.1).
+ * Строки: [условный проход Dу, мм, значения по столбцам]. Отдельно — нормы для
+ * плоских поверхностей и Dу > 1400 мм (для t ≤ 0 — Dу > 500 мм) — в Вт/м².
+ */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  UF.data = UF.data || {};
+
+  var POS_AIR_T = [20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600];
+  var POS_ROOM_T = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600];
+  var NEG_T = [0, -10, -20, -40, -60, -80, -100, -120, -140, -160, -180];
+
+  UF.data.sp61 = {
+    source: 'СП 61.13330.2012 (ред. с Изм. N 1, 2)',
+
+    norms: {
+      // Табл. 2 — на открытом воздухе, более 5000 ч
+      air9000: {
+        ref: 'табл. 2', temps: POS_AIR_T,
+        linear: [
+          [15, 4, 9, 17, 25, 35, 45, 56, 68, 81, 94, 109, 124, 140],
+          [20, 4, 10, 19, 28, 39, 50, 62, 75, 89, 103, 119, 135, 152],
+          [25, 5, 11, 20, 31, 42, 54, 67, 81, 95, 111, 128, 145, 163],
+          [40, 5, 12, 23, 35, 47, 60, 75, 90, 106, 123, 142, 161, 181],
+          [50, 6, 14, 26, 38, 51, 66, 81, 98, 115, 133, 153, 173, 195],
+          [65, 7, 16, 29, 43, 58, 74, 90, 108, 127, 147, 169, 191, 214],
+          [80, 8, 17, 31, 46, 62, 78, 96, 115, 135, 156, 179, 202, 226],
+          [100, 9, 19, 34, 50, 67, 85, 104, 124, 146, 168, 192, 217, 243],
+          [125, 10, 21, 38, 55, 74, 93, 114, 136, 159, 183, 208, 235, 263],
+          [150, 11, 23, 42, 61, 80, 101, 132, 156, 182, 209, 238, 267, 298],
+          [200, 14, 28, 50, 72, 95, 119, 154, 182, 212, 242, 274, 308, 343],
+          [250, 16, 33, 57, 82, 107, 133, 173, 204, 236, 270, 305, 342, 380],
+          [300, 18, 37, 64, 91, 118, 147, 191, 224, 259, 296, 333, 373, 414],
+          [350, 22, 45, 77, 108, 140, 173, 208, 244, 281, 320, 361, 403, 446],
+          [400, 25, 49, 84, 117, 152, 187, 223, 262, 301, 343, 385, 430, 476],
+          [450, 27, 54, 91, 127, 163, 200, 239, 280, 322, 365, 410, 457, 505],
+          [500, 30, 58, 98, 136, 175, 215, 256, 299, 343, 389, 436, 486, 537],
+          [600, 34, 67, 112, 154, 197, 241, 286, 333, 382, 432, 484, 537, 593],
+          [700, 38, 75, 124, 170, 217, 264, 313, 364, 416, 470, 526, 583, 642],
+          [800, 43, 83, 137, 188, 238, 290, 343, 397, 453, 511, 571, 633, 696],
+          [900, 47, 91, 150, 205, 259, 315, 372, 430, 490, 552, 616, 681, 749],
+          [1000, 52, 100, 163, 222, 281, 340, 400, 463, 527, 592, 660, 729, 801],
+          [1400, 70, 133, 215, 291, 364, 439, 514, 591, 670, 750, 833, 918, 1098]
+        ],
+        surfaceFromDy: 1400,
+        surface: [15, 27, 41, 54, 66, 77, 89, 100, 110, 134, 153, 174, 192]
+      },
+      // Табл. 3 — на открытом воздухе, 5000 ч и менее
+      air5000: {
+        ref: 'табл. 3', temps: POS_AIR_T,
+        linear: [
+          [15, 4, 10, 18, 28, 38, 49, 61, 74, 87, 102, 117, 133, 150],
+          [20, 5, 11, 21, 31, 42, 54, 67, 81, 96, 112, 128, 146, 164],
+          [25, 5, 12, 23, 34, 46, 59, 73, 88, 104, 120, 138, 157, 176],
+          [40, 6, 14, 26, 39, 52, 67, 82, 99, 116, 135, 154, 174, 196],
+          [50, 7, 16, 29, 43, 57, 73, 90, 107, 126, 146, 167, 189, 212],
+          [65, 8, 18, 33, 48, 65, 82, 100, 120, 141, 162, 185, 209, 234],
+          [80, 9, 20, 36, 52, 69, 88, 107, 128, 150, 172, 197, 222, 248],
+          [100, 10, 22, 39, 57, 76, 96, 116, 139, 162, 187, 212, 239, 267],
+          [125, 12, 25, 44, 63, 84, 113, 137, 162, 189, 216, 245, 276, 307],
+          [150, 13, 27, 48, 70, 92, 123, 149, 176, 205, 235, 266, 298, 332],
+          [200, 16, 34, 59, 83, 109, 146, 176, 207, 240, 274, 310, 347, 385],
+          [250, 19, 39, 67, 95, 124, 166, 199, 234, 270, 307, 346, 387, 429],
+          [300, 22, 44, 76, 106, 138, 184, 220, 258, 297, 338, 380, 424, 469],
+          [350, 27, 54, 92, 128, 164, 202, 241, 282, 324, 368, 413, 460, 508],
+          [400, 30, 60, 100, 139, 178, 219, 260, 304, 349, 395, 443, 493, 544],
+          [450, 33, 65, 109, 150, 192, 235, 280, 326, 373, 422, 473, 526, 580],
+          [500, 36, 71, 118, 162, 207, 253, 300, 349, 399, 451, 505, 561, 618],
+          [600, 42, 82, 135, 185, 235, 285, 338, 391, 447, 504, 563, 624, 686],
+          [700, 47, 91, 150, 204, 259, 314, 371, 429, 489, 551, 614, 679, 746],
+          [800, 53, 102, 166, 226, 286, 346, 407, 470, 535, 602, 670, 740, 812],
+          [900, 59, 112, 183, 248, 312, 377, 443, 511, 581, 652, 725, 800, 877],
+          [1000, 64, 123, 199, 269, 339, 408, 479, 552, 626, 702, 780, 860, 941],
+          [1400, 87, 165, 264, 355, 444, 532, 621, 712, 804, 898, 995, 1092, 1193]
+        ],
+        surfaceFromDy: 1400,
+        surface: [19, 35, 54, 70, 85, 99, 112, 125, 141, 158, 174, 191, 205]
+      },
+      // Табл. 4 — в помещении, более 5000 ч
+      room9000: {
+        ref: 'табл. 4', temps: POS_ROOM_T,
+        linear: [
+          [15, 6, 14, 23, 33, 43, 54, 66, 79, 93, 107, 122, 138],
+          [20, 7, 16, 26, 37, 48, 60, 73, 87, 102, 117, 134, 151],
+          [25, 8, 18, 28, 40, 52, 65, 79, 94, 110, 126, 144, 162],
+          [40, 9, 21, 32, 45, 59, 73, 89, 105, 122, 141, 160, 180],
+          [50, 10, 23, 36, 50, 64, 80, 96, 114, 133, 152, 173, 194],
+          [65, 12, 26, 41, 56, 72, 89, 107, 127, 147, 169, 191, 214],
+          [80, 13, 28, 44, 60, 77, 95, 114, 135, 156, 179, 202, 227],
+          [100, 14, 31, 48, 65, 84, 103, 124, 146, 169, 193, 218, 244],
+          [125, 16, 35, 53, 72, 92, 113, 136, 159, 184, 210, 237, 265],
+          [150, 18, 38, 58, 79, 100, 123, 147, 172, 199, 226, 255, 285],
+          [200, 22, 46, 70, 93, 118, 144, 172, 200, 230, 262, 294, 328],
+          [250, 26, 53, 79, 106, 134, 162, 193, 224, 257, 291, 327, 364],
+          [300, 29, 60, 88, 118, 148, 179, 212, 246, 281, 318, 357, 396],
+          [350, 33, 66, 97, 129, 161, 195, 230, 267, 305, 344, 385, 428],
+          [400, 36, 72, 106, 139, 174, 210, 247, 286, 326, 368, 411, 456],
+          [450, 39, 78, 114, 150, 187, 225, 264, 305, 348, 392, 437, 484],
+          // D1: в исходной программе при 350 °C стояло 262, по СП — 282
+          [500, 43, 84, 123, 161, 200, 241, 282, 326, 370, 417, 465, 514],
+          [600, 49, 96, 139, 181, 225, 269, 315, 363, 412, 462, 515, 569],
+          [700, 55, 107, 153, 200, 247, 295, 344, 395, 448, 502, 558, 616],
+          [800, 61, 118, 169, 220, 270, 322, 376, 431, 487, 546, 606, 668],
+          [900, 67, 130, 185, 239, 294, 350, 407, 466, 527, 589, 653, 718],
+          [1000, 74, 141, 201, 259, 318, 377, 438, 501, 565, 631, 699, 768],
+          [1400, 99, 187, 263, 337, 411, 485, 561, 638, 716, 797, 880, 964]
+        ],
+        surfaceFromDy: 1400,
+        surface: [23, 41, 56, 69, 82, 94, 106, 118, 130, 141, 153, 165]
+      },
+      // Табл. 5 — в помещении, 5000 ч и менее
+      room5000: {
+        ref: 'табл. 5', temps: POS_ROOM_T,
+        linear: [
+          [15, 6, 16, 25, 35, 46, 58, 71, 85, 99, 114, 130, 147],
+          [20, 7, 18, 28, 40, 52, 65, 79, 93, 109, 126, 143, 161],
+          [25, 8, 20, 31, 43, 56, 70, 85, 101, 118, 136, 154, 174],
+          [40, 10, 23, 36, 49, 64, 80, 96, 114, 132, 152, 172, 194],
+          [50, 11, 25, 40, 54, 70, 87, 105, 124, 144, 165, 187, 210],
+          [65, 13, 29, 45, 62, 79, 98, 118, 139, 161, 184, 208, 233],
+          [80, 14, 32, 49, 66, 85, 105, 126, 148, 171, 195, 221, 247],
+          [100, 16, 35, 54, 73, 93, 115, 137, 161, 186, 212, 239, 267],
+          [125, 18, 39, 60, 81, 103, 126, 151, 176, 203, 231, 261, 291],
+          [150, 21, 44, 66, 89, 113, 138, 164, 192, 221, 251, 282, 315],
+          [200, 26, 53, 80, 107, 134, 163, 194, 225, 258, 292, 328, 365],
+          [250, 30, 62, 92, 122, 153, 185, 218, 253, 290, 327, 366, 407],
+          [300, 34, 70, 103, 136, 170, 205, 241, 279, 319, 359, 402, 446],
+          [350, 38, 77, 113, 149, 186, 224, 263, 304, 347, 391, 436, 483],
+          [400, 42, 85, 123, 162, 201, 242, 284, 328, 373, 419, 467, 517],
+          [450, 46, 92, 134, 175, 217, 260, 305, 351, 398, 448, 498, 551],
+          [500, 51, 100, 144, 189, 233, 279, 327, 375, 426, 478, 532, 587],
+          [600, 58, 114, 164, 214, 263, 314, 367, 420, 476, 533, 592, 652],
+          [700, 65, 127, 182, 236, 290, 345, 402, 460, 520, 582, 645, 710],
+          [800, 73, 141, 202, 261, 320, 379, 441, 504, 568, 635, 703, 772],
+          [900, 81, 156, 221, 285, 349, 413, 479, 547, 616, 687, 760, 834],
+          [1000, 89, 170, 241, 309, 378, 447, 518, 590, 663, 739, 816, 896],
+          [1400, 120, 226, 318, 406, 492, 580, 668, 758, 850, 943, 1038, 1136]
+        ],
+        surfaceFromDy: 1400,
+        surface: [26, 46, 63, 78, 92, 105, 119, 132, 145, 158, 171, 190]
+      },
+      // Табл. 6 — отрицательные температуры, на открытом воздухе
+      airNeg: {
+        ref: 'табл. 6', temps: NEG_T,
+        linear: [
+          [20, 3, 3, 4, 6, 7, 9, 10, 12, 14, 16, 17],
+          [25, 3, 4, 5, 6, 8, 9, 11, 12, 15, 17, 18],
+          [40, 4, 5, 5, 7, 9, 10, 12, 13, 16, 18, 19],
+          [50, 5, 5, 6, 8, 9, 11, 13, 14, 16, 19, 20],
+          [65, 6, 6, 7, 9, 10, 12, 14, 15, 17, 20, 21],
+          [80, 6, 6, 8, 10, 11, 13, 15, 16, 18, 21, 22],
+          [100, 7, 7, 9, 11, 13, 14, 17, 18, 20, 22, 23],
+          [125, 8, 8, 9, 12, 14, 16, 18, 20, 21, 23, 25],
+          [150, 8, 9, 10, 13, 16, 17, 20, 21, 23, 25, 27],
+          [200, 10, 10, 12, 16, 18, 20, 23, 25, 27, 29, 31],
+          [250, 11, 12, 14, 18, 20, 23, 26, 27, 30, 33, 35],
+          [300, 12, 13, 16, 20, 23, 25, 28, 30, 34, 36, 39],
+          [350, 14, 15, 18, 22, 24, 27, 30, 33, 36, 38, 41],
+          [400, 16, 16, 20, 23, 26, 29, 32, 34, 38, 40, 43],
+          [450, 17, 18, 21, 26, 28, 31, 34, 37, 39, 42, 45],
+          [500, 19, 21, 23, 27, 30, 33, 36, 38, 41, 44, 46]
+        ],
+        // D3: «Более 500» — это Вт/м², а не Вт/м
+        surfaceFromDy: 500,
+        surface: [11, 12, 12, 13, 14, 15, 15, 16, 17, 18, 19]
+      },
+      // Табл. 7 — отрицательные температуры, в помещении
+      roomNeg: {
+        ref: 'табл. 7', temps: NEG_T,
+        linear: [
+          [20, 5, 6, 6, 7, 8, 9, 10, 10, 11, 13, 14],
+          [25, 6, 7, 7, 8, 9, 10, 11, 14, 16, 17, 20],
+          [40, 7, 7, 8, 9, 11, 12, 13, 16, 17, 19, 21],
+          [50, 7, 8, 9, 10, 12, 13, 15, 17, 19, 20, 22],
+          [65, 8, 9, 9, 11, 13, 14, 16, 18, 20, 21, 23],
+          [80, 9, 9, 10, 12, 13, 15, 17, 19, 20, 22, 24],
+          [100, 10, 10, 11, 13, 14, 16, 18, 20, 21, 23, 25],
+          [125, 11, 11, 12, 14, 16, 18, 20, 21, 23, 26, 27],
+          [150, 12, 13, 13, 16, 17, 20, 21, 23, 25, 27, 30],
+          [200, 15, 16, 16, 19, 21, 23, 25, 27, 30, 31, 34],
+          [250, 16, 17, 19, 20, 23, 26, 27, 30, 33, 36, 38],
+          [300, 19, 20, 21, 23, 26, 29, 31, 34, 37, 39, 41],
+          [350, 21, 22, 23, 26, 29, 31, 34, 36, 38, 41, 44],
+          [400, 23, 24, 26, 28, 30, 34, 36, 38, 41, 44, 46],
+          [450, 25, 27, 28, 30, 33, 35, 37, 40, 42, 45, 48],
+          [500, 28, 29, 30, 33, 35, 37, 40, 42, 45, 47, 49]
+        ],
+        surfaceFromDy: 500,
+        surface: [15, 16, 17, 18, 19, 19, 20, 21, 22, 22, 23]
+      },
+      // Табл. 8, 9 — двухтрубные водяные сети в непроходных каналах (сумма подача+обратка)
+      channel9000: {
+        ref: 'табл. 8', temps: [65, 90, 110],
+        linear: [
+          [25, 19, 24, 28], [32, 21, 26, 30], [40, 22, 28, 32], [50, 25, 30, 35], [65, 29, 35, 40],
+          [80, 31, 37, 43], [100, 34, 40, 46], [125, 39, 46, 52], [150, 42, 50, 57], [200, 52, 61, 70],
+          [250, 60, 71, 80], [300, 67, 79, 90], [350, 75, 88, 99], [400, 81, 96, 108], [450, 89, 104, 117],
+          [500, 96, 113, 127], [600, 111, 129, 145], [700, 123, 144, 160], [800, 137, 160, 177],
+          [900, 151, 176, 197], [1000, 166, 192, 212], [1200, 195, 225, 250], [1400, 221, 256, 283]
+        ]
+      },
+      channel5000: {
+        ref: 'табл. 9', temps: [65, 90, 110],
+        linear: [
+          [25, 21, 26, 31], [32, 24, 29, 33], [40, 25, 31, 35], [50, 29, 34, 39], [65, 32, 39, 45],
+          [80, 35, 42, 48], [100, 39, 47, 53], [125, 44, 53, 60], [150, 49, 59, 66], [200, 60, 71, 81],
+          [250, 71, 83, 94], [300, 81, 94, 105], [350, 89, 105, 118], [400, 98, 115, 128], [450, 107, 125, 140],
+          [500, 118, 137, 152], [600, 134, 156, 174], [700, 151, 175, 194], [800, 168, 195, 216],
+          [900, 186, 216, 239], [1000, 203, 234, 261], [1200, 239, 277, 305], [1400, 273, 316, 349]
+        ]
+      }
+    },
+
+    // Табл. В.2 — коэффициент теплоотдачи α, Вт/(м²·°C)
+    alphaB2: {
+      ref: 'табл. В.2',
+      room: { horizontal: { low: 7, high: 10 }, vertical: { low: 8, high: 12 } },
+      // на открытом воздухе — по скорости ветра, м/с (без сведений — 10 м/с)
+      outdoorWind: [5, 10, 15],
+      outdoor: { horizontal: [20, 26, 35], vertical: [26, 35, 52] }
+    },
+    // СП 41-103-2000 п. 2.2.3 — α для расчёта по заданной температуре поверхности
+    alphaSurfaceTemp: { ref: 'СП 41-103-2000, п. 2.2.3', low: 6, high: 11 },
+    // СП 61 В.2.4 — α для расчёта против конденсации
+    alphaCondensation: { ref: 'п. В.2.4', low: 5, high: 7 },
+    // СП 61 В.3.2 — α в канале
+    alphaChannel: { ref: 'п. В.3.2', value: 11 },
+
+    // Табл. В.4 — расчётный перепад tн − tп, °C
+    deltaTB4: {
+      ref: 'табл. В.4',
+      tAir: [10, 15, 20, 25, 30],
+      rh: [40, 50, 60, 70, 80, 90],
+      rows: [
+        [13.4, 10.4, 7.8, 5.5, 3.5, 1.6],
+        [14.2, 10.9, 9.1, 5.7, 3.6, 1.7],
+        [14.8, 11.3, 8.4, 5.9, 3.7, 1.8],
+        [15.3, 11.7, 8.7, 6.1, 3.8, 1.9],
+        [15.9, 12.2, 9.0, 6.3, 4.0, 2.0]
+      ]
+    },
+
+    // Табл. 15 / В.5 — температурные режимы водяных тепловых сетей
+    networkRegimes: [
+      { id: '95-70', label: '95/70 °C', supply: 65, ret: 50 },
+      { id: '150-70', label: '150/70 °C', supply: 90, ret: 50 },
+      { id: '180-70', label: '180/70 °C', supply: 110, ret: 50 }
+    ],
+
+    // п. 6.7.1 — допустимая температура поверхности изоляции, °C
+    surfaceTempLimits: [
+      { id: 'room-gt500', env: 'room', label: 'В помещении, вещество выше 500 °C', value: 55 },
+      { id: 'room-150-500', env: 'room', label: 'В помещении, вещество 150–500 °C', value: 45 },
+      { id: 'room-le150', env: 'room', label: 'В помещении, вещество 150 °C и ниже', value: 40 },
+      { id: 'room-flash', env: 'room', label: 'В помещении, вспышка паров ниже 45 °C', value: 35 },
+      { id: 'out-metal', env: 'outdoor', label: 'На улице, металлическое покрытие', value: 55 },
+      { id: 'out-other', env: 'outdoor', label: 'На улице, другое покрытие', value: 60 },
+      { id: 'out-nozone', env: 'outdoor', label: 'Вне рабочей зоны', value: 75 }
+    ],
+
+    // Табл. В.6 — теплопроводность грунта, Вт/(м·°C)
+    soils: [
+      { id: 'sand-1480-4', label: 'Песок, 1480 кг/м³, влажность 4 %', value: 0.86 },
+      { id: 'sand-1600-5', label: 'Песок, 1600 кг/м³, влажность 5 %', value: 1.11 },
+      { id: 'sand-1600-15', label: 'Песок, 1600 кг/м³, влажность 15 %', value: 1.92 },
+      { id: 'loam-1100-8', label: 'Суглинок, 1100 кг/м³, 8 %', value: 0.71 },
+      { id: 'loam-1100-15', label: 'Суглинок, 1100 кг/м³, 15 %', value: 0.9 },
+      { id: 'loam-1200-8', label: 'Суглинок, 1200 кг/м³, 8 %', value: 0.83 },
+      { id: 'loam-1200-15', label: 'Суглинок, 1200 кг/м³, 15 %', value: 1.04 },
+      { id: 'loam-1300-8', label: 'Суглинок, 1300 кг/м³, 8 %', value: 0.98 },
+      { id: 'loam-1300-15', label: 'Суглинок, 1300 кг/м³, 15 %', value: 1.2 },
+      { id: 'loam-1400-8', label: 'Суглинок, 1400 кг/м³, 8 %', value: 1.12 },
+      { id: 'loam-1400-15', label: 'Суглинок, 1400 кг/м³, 15 %', value: 1.36 },
+      { id: 'loam-1400-20', label: 'Суглинок, 1400 кг/м³, 20 %', value: 1.63 },
+      { id: 'loam-1500-8', label: 'Суглинок, 1500 кг/м³, 8 %', value: 1.27 },
+      { id: 'loam-1500-15', label: 'Суглинок, 1500 кг/м³, 15 %', value: 1.56 },
+      { id: 'loam-1500-20', label: 'Суглинок, 1500 кг/м³, 20 %', value: 1.86 },
+      { id: 'loam-1600-8', label: 'Суглинок, 1600 кг/м³, 8 %', value: 1.45 },
+      { id: 'loam-1600-15', label: 'Суглинок, 1600 кг/м³, 15 %', value: 1.78 },
+      { id: 'loam-2000-5', label: 'Суглинок, 2000 кг/м³, 5 %', value: 1.75 },
+      { id: 'loam-2000-10', label: 'Суглинок, 2000 кг/м³, 10 %', value: 2.56 },
+      { id: 'clay-1300-8', label: 'Глинистый, 1300 кг/м³, 8 %', value: 0.72 },
+      { id: 'clay-1300-18', label: 'Глинистый, 1300 кг/м³, 18 %', value: 1.08 },
+      { id: 'clay-1300-40', label: 'Глинистый, 1300 кг/м³, 40 %', value: 1.66 },
+      { id: 'clay-1500-8', label: 'Глинистый, 1500 кг/м³, 8 %', value: 1.0 },
+      { id: 'clay-1500-18', label: 'Глинистый, 1500 кг/м³, 18 %', value: 1.46 },
+      { id: 'clay-1500-40', label: 'Глинистый, 1500 кг/м³, 40 %', value: 2.0 },
+      { id: 'clay-1600-8', label: 'Глинистый, 1600 кг/м³, 8 %', value: 1.13 },
+      { id: 'clay-1600-27', label: 'Глинистый, 1600 кг/м³, 27 %', value: 1.93 }
+    ],
+
+    // Табл. В.7 — сухой воздух при 0,1 МПа: t, ρ, cp (кДж/кг·К), λ·10², ν·10⁶, Pr
+    airProps: [
+      [0, 1.293, 1.005, 2.44, 13.28, 0.707], [10, 1.247, 1.005, 2.51, 14.16, 0.705],
+      [20, 1.205, 1.005, 2.59, 15.06, 0.703], [30, 1.165, 1.005, 2.67, 16.00, 0.701],
+      [40, 1.128, 1.005, 2.76, 16.96, 0.699], [50, 1.093, 1.005, 2.83, 17.95, 0.698],
+      [60, 1.060, 1.005, 2.90, 18.97, 0.696], [70, 1.029, 1.009, 2.96, 20.02, 0.694],
+      [80, 1.000, 1.009, 3.05, 21.09, 0.692], [90, 0.972, 1.009, 3.13, 22.10, 0.690],
+      [100, 0.946, 1.009, 3.21, 23.13, 0.688], [120, 0.898, 1.009, 3.34, 25.45, 0.686],
+      [140, 0.854, 1.013, 3.49, 27.80, 0.684], [160, 0.815, 1.017, 3.64, 30.09, 0.682],
+      [180, 0.779, 1.022, 3.78, 32.49, 0.681], [200, 0.746, 1.026, 3.93, 34.85, 0.680],
+      [250, 0.674, 1.038, 4.27, 40.61, 0.677], [300, 0.615, 1.047, 4.60, 48.33, 0.674]
+    ]
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/data/materials.js */
+/*
+ * База материалов. Расчётное ядро не знает о бренде: всё, что зависит от материала,
+ * берётся отсюда. Как добавить материал — см. README.md, раздел «Новый материал».
+ *
+ * Модели теплопроводности λ(t_ср), Вт/(м·°C), t_ср — средняя температура слоя, °C:
+ *   { type: 'linear', A, B }          λ = A + B·t
+ *   { type: 'exp', a, b }             λ = a·e^(b·t)
+ *   { type: 'constant', value }       λ = value
+ * Излучательная способность покрытия: 'low' — металлическая поверхность
+ * (СП 61, табл. В.2, прим. 1), 'high' — неметаллическая (прим. 2).
+ * Источники S1–S6 и решения М0–М6, Д1 — UNIONFLEX_MATERIAL_DATABASE.md, DESIGN.md.
+ */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  UF.data = UF.data || {};
+
+  var COVERINGS = {
+    none:              { label: 'Без покрытия', emissivity: 'high', note: 'поверхность — вспененный каучук' },
+    CM:                { label: 'Самоклеящийся слой (СМ)', emissivity: 'high', note: 'наружная поверхность — каучук', tempRange: [-40, 85] },
+    METALL:            { label: 'METALL — армированная алюминиевая фольга', emissivity: 'low' },
+    // Классы ALU, TITAN, PROM FORMA FOIL — решение заказчика М4 (UNIONFLEX_MATERIAL_DATABASE.md)
+    ALU:               { label: 'ALU — алюминий с ПЭТФ-плёнкой', emissivity: 'low' },
+    TITAN:             { label: 'TITAN — ПВХ, алюминиевая фольга, ПЭТФ', emissivity: 'low' },
+    'PROM FORMA':      { label: 'PROM FORMA — стеклоткань', emissivity: 'high' },
+    'PROM FORMA FOIL': { label: 'PROM FORMA FOIL — стеклоткань с фольгой', emissivity: 'high' }
+  };
+
+  // Трубки UNIONFLEX STD: наличие по наружному диаметру трубы (S6 — памятка производителя).
+  // [od_min, od_max, внутренний диаметр трубки, толщины]
+  var STD_TUBES = [
+    [5, 6, 6, [6, 9]],
+    [8, 10, 10, [6, 9, 13, 19, 25]],
+    [11, 12, 12, [6, 9, 13, 19, 25, 32]],
+    [13, 15, 15, [6, 9, 13, 19, 25, 32]],
+    [16, 18, 18, [6, 9, 13, 19, 25, 32]],
+    [19, 20, 20, [6, 9]],
+    [19, 22, 22, [19, 25, 32]],
+    [21, 22, 22, [6, 9, 13]],
+    [23, 25, 25, [6, 9, 13, 19, 25, 32]],
+    [26, 28, 28, [6, 9, 13, 19, 25, 32]],
+    [29, 30, 30, [6, 9, 13, 19]],
+    [32, 35, 35, [6, 9, 13, 19, 25, 32]],
+    [37, 42, 42, [6, 9, 13, 19, 25, 32]],
+    [45, 48, 48, [9, 13, 19, 25, 32]],
+    [50, 54, 54, [9, 13, 19, 25, 32]],
+    [55, 57, 57, [9, 13, 19, 25, 32]],
+    [58, 60, 60, [9, 13, 19, 25, 32]],
+    [61, 64, 64, [9, 13, 19, 25, 32]],
+    [67, 70, 70, [9, 13, 19, 25, 32]],
+    [73, 76, 76, [9, 13, 19, 25, 32]],
+    [77, 80, 80, [9, 13, 19, 25, 32]],
+    [85, 89, 89, [9, 13, 19, 25, 32]],
+    [97, 102, 102, [9, 13, 19, 25, 32]],
+    [103, 108, 108, [9, 13, 19, 25, 32]],
+    [110, 114, 114, [9, 13, 19, 25, 32]],
+    [122, 125, 125, [9, 13, 19, 25, 32]],
+    [130, 133, 133, [9, 13, 19, 25, 32]],
+    [137, 140, 140, [9, 13, 19, 25, 32]],
+    [156, 160, 160, [13, 19]]
+  ];
+
+  UF.data.coverings = COVERINGS;
+
+  UF.data.materials = [
+    {
+      id: 'unionflex-std',
+      brand: 'UNIONFLEX',
+      grade: 'STD',
+      name: 'UNIONFLEX STD',
+      short: 'Стандартная марка — трубки и рулоны для труб, воздуховодов и оборудования',
+      density: '55 ± 15 кг/м³',
+      // Д1 (вариант «в»): по умолчанию — СП 61 п. 6.35, табл. Б.5 (каучук 50–75 кг/м³);
+      // альтернатива — данные производителя (М1: 0,034 при 0 °C, наклон 0,0001 по табл. S2).
+      lambdaModels: {
+        sp61: { type: 'exp', a: 0.0325, b: 0.0036, maxTemp: 120,
+                label: 'По СП 61.13330 (табл. Б.5)', source: 'СП 61.13330.2012 изм. 2, п. 6.35, табл. Б.5 (вспененный синтетический каучук, 50–75 кг/м³)' },
+        manufacturer: { type: 'linear', A: 0.034, B: 0.0001,
+                label: 'По данным производителя', source: 'данные производителя UNIONFLEX: λ(0 °C) = 0,034; температурный коэффициент 0,0001 — по таблице λ(t) производителя' }
+      },
+      defaultLambda: 'sp61',
+      tempRange: [-200, 110],
+      // М3: диапазон −200…+110 °C — решение заказчика
+      tempNotes: 'Исполнение с самоклеящимся слоем (СМ): −40…+85 °C',
+      mu: '≥ 10 000',
+      fire: 'Г1, В1, Д3, Т2',
+      products: {
+        tube: { label: 'Трубка', thicknesses: [6, 9, 13, 19, 25, 32], maxOd: 160, sizes: STD_TUBES,
+                coverings: ['none', 'CM', 'METALL', 'TITAN', 'PROM FORMA', 'PROM FORMA FOIL'] },
+        roll: { label: 'Рулон', thicknesses: [3, 6, 9, 10, 13, 16, 19, 25, 32, 40, 50],
+                coverings: ['none', 'CM', 'METALL', 'ALU', 'TITAN', 'PROM FORMA', 'PROM FORMA FOIL'] }
+      },
+      sources: ['union-flex.ru/trubki', 'union-flex.ru/rulony', 'Каталог продукции Unionflex', 'Памятка по выбору трубок', 'Типовая серия 7.903.9-8.15 вып. 5']
+    },
+    {
+      id: 'unionflex-hd',
+      brand: 'UNIONFLEX',
+      grade: 'HD',
+      name: 'UNIONFLEX HD',
+      short: 'Высокоплотная марка — рулоны, рекомендуется для подземной и канальной прокладки',
+      density: '130 кг/м³',
+      // М2: зависимость λ(t) производителем не опубликована; принято постоянное
+      // расчётное значение в конструкции из типовой серии 7.903.9-8.15 вып. 5.
+      lambdaModels: {
+        design: { type: 'constant', value: 0.047,
+                  label: 'Расчётная в конструкции (постоянная)', source: 'расчётная теплопроводность в конструкции 0,047 Вт/(м·°C) — типовая серия 7.903.9-8.15, вып. 5, прил. А' }
+      },
+      defaultLambda: 'design',
+      tempRange: [-50, 110],
+      multilayerMin: -200,
+      tempNotes: 'Ниже −50 °C (до −200 °C) — только в многослойной конструкции',
+      mu: '≥ 7 000',
+      fire: 'Г1, В2, Д3, Т2',
+      recommendedFor: ['channel', 'underground'],
+      products: {
+        roll: { label: 'Рулон', thicknesses: [6, 10, 13, 16, 19, 25, 32], coverings: ['none', 'CM'] }
+      },
+      sources: ['union-flex.ru/vysokoplotnye-rulony', 'Каталог продукции Unionflex', 'Типовая серия 7.903.9-8.15 вып. 5']
+    }
+  ];
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/data/pipes.js */
+/*
+ * Сортамент труб и справочные свойства.
+ * Стальные трубы: наружный диаметр → условный проход Dу (ГОСТ 3262, ГОСТ 10704/8732).
+ * По СП 61 п. 6.1.1 нормы берутся «по условному диаметру, соответствующему стандартным
+ * трубам того же наружного диаметра»; для нестальных труб Dу определяется линейной
+ * интерполяцией этой же зависимости по наружному диаметру.
+ */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  UF.data = UF.data || {};
+
+  UF.data.pipes = {
+    steelOdToDn: [
+      [10.2, 6], [13.5, 8], [17.2, 10], [21.3, 15], [26.8, 20], [33.5, 25], [42.3, 32], [48, 40],
+      [57, 50], [76, 65], [89, 80], [108, 100], [133, 125], [159, 150], [194, 175], [219, 200],
+      [273, 250], [325, 300], [377, 350], [426, 400], [480, 450], [530, 500], [630, 600],
+      [720, 700], [820, 800], [920, 900], [1020, 1000], [1220, 1200], [1420, 1400]
+    ],
+    // Списки для выбора в интерфейсе (можно ввести любой диаметр вручную)
+    presets: {
+      steel: [17.2, 21.3, 26.8, 33.5, 42.3, 48, 57, 60, 76, 89, 108, 114, 133, 159, 219, 273, 325, 377, 426, 530, 630, 720, 820, 1020, 1220, 1420],
+      copper: [6, 8, 10, 12, 15, 18, 22, 28, 35, 42, 54, 64, 76.1, 88.9, 108],
+      plastic: [16, 20, 25, 32, 40, 50, 63, 75, 90, 110, 125, 160, 200, 225, 250, 315, 400, 500, 630]
+    },
+    // Полиэтиленовые трубы SDR 41 (ГОСТ 18599): наружный диаметр → толщина стенки, мм.
+    // D11: для 560 мм принято 13,7 (в исходной программе ошибочно 17,2).
+    plasticWall: [
+      [10, 1.3], [16, 1.3], [20, 1.3], [25, 1.3], [32, 1.3], [40, 1.3], [50, 1.8], [63, 1.8], [75, 1.9],
+      [90, 2.2], [110, 2.7], [125, 3.1], [140, 3.5], [160, 4.0], [180, 4.4], [200, 4.9], [225, 5.5],
+      [250, 6.2], [280, 6.9], [315, 7.7], [355, 8.7], [400, 9.8], [450, 11.0], [500, 12.3], [560, 13.7],
+      [630, 15.4], [710, 17.4], [800, 19.6], [900, 22.0], [1000, 24.5], [1200, 29.4], [1400, 34.3]
+    ],
+    // Теплопроводность стенки пластиковой трубы, Вт/(м·°C): 0,24 + 0,001·t.
+    // Источник UNKNOWN (значение исходной программы, см. CALCULATION_METHOD.md); в инженерном режиме можно задать своё.
+    plasticLambda: { A: 0.24, B: 0.001, source: 'справочное значение для полимерных труб (первоисточник не установлен; уточните по паспорту трубы)' },
+    // Плотность, кг/м³, и удельная теплоёмкость, кДж/(кг·°C), материала стенки
+    wall: {
+      steel: { rho: 7850, c: 0.486, label: 'Сталь' },
+      copper: { rho: 8933, c: 0.383, label: 'Медь' }
+    }
+  };
+
+  // Вода: t, °C → плотность, кг/м³, и теплоёмкость, кДж/(кг·°C) (справочные данные)
+  UF.data.fluids = {
+    water: {
+      label: 'Вода',
+      table: [
+        [0, 999.8, 4.217], [10, 999.7, 4.192], [20, 998.2, 4.182], [30, 995.7, 4.178], [40, 992.2, 4.179],
+        [50, 988.0, 4.181], [60, 983.2, 4.185], [70, 977.8, 4.190], [80, 971.8, 4.197], [90, 965.3, 4.205],
+        [100, 958.4, 4.216], [120, 943.1, 4.245], [150, 917.0, 4.310]
+      ],
+      freezeTemp: 0, latentHeat: 334, // кДж/кг
+      source: 'Справочные теплофизические свойства воды на линии насыщения'
+    },
+    // Воздух — по табл. В.7 СП 61 (UF.data.sp61.airProps)
+    air: { label: 'Воздух', fromSp61: true }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/core/base.js */
+/*
+ * Расчётное ядро UNIONFLEX CALCULATOR — базовые функции.
+ * Не зависит от интерфейса и бренда. Методика: CALCULATION_METHOD.md (исправленная
+ * методика исходной программы по СП 61.13330.2012 с Изм. 1, 2).
+ */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  var core = UF.core = UF.core || {};
+  var PI = Math.PI;
+
+  function CalcError(code, text, field) {
+    this.code = code; this.text = text; this.field = field || null;
+  }
+  core.CalcError = CalcError;
+  function fail(code, text, field) { throw new CalcError(code, text, field); }
+  core.fail = fail;
+
+  // ---------- интерполяция ----------
+
+  // Линейная интерполяция по упорядоченному (по возрастанию или убыванию) массиву узлов.
+  // Без экстраполяции: вне диапазона возвращает null.
+  function locate(xs, x) {
+    var n = xs.length, asc = xs[n - 1] >= xs[0];
+    var lo = asc ? xs[0] : xs[n - 1], hi = asc ? xs[n - 1] : xs[0];
+    if (x < lo - 1e-9 || x > hi + 1e-9) return null;
+    for (var i = 0; i < n - 1; i++) {
+      var a = xs[i], b = xs[i + 1];
+      if ((x - a) * (x - b) <= 0) {
+        var t = b === a ? 0 : (x - a) / (b - a);
+        return { i: i, t: t };
+      }
+    }
+    return { i: n - 1, t: 0 };
+  }
+  core.locate = locate;
+
+  function interp1(xs, ys, x) {
+    var p = locate(xs, x);
+    if (!p) return null;
+    if (p.i >= xs.length - 1) return ys[xs.length - 1];
+    return ys[p.i] + (ys[p.i + 1] - ys[p.i]) * p.t;
+  }
+  core.interp1 = interp1;
+
+  // Таблица: rowKeys[i] × colKeys[j] → rows[i][j]; билинейная интерполяция.
+  function interp2(rowKeys, colKeys, rows, r, c) {
+    var pr = locate(rowKeys, r), pc = locate(colKeys, c);
+    if (!pr || !pc) return null;
+    function rowVal(i) {
+      var row = rows[i];
+      if (pc.i >= colKeys.length - 1) return row[colKeys.length - 1];
+      return row[pc.i] + (row[pc.i + 1] - row[pc.i]) * pc.t;
+    }
+    if (pr.i >= rowKeys.length - 1) return rowVal(rowKeys.length - 1);
+    var a = rowVal(pr.i), b = rowVal(pr.i + 1);
+    return a + (b - a) * pr.t;
+  }
+  core.interp2 = interp2;
+
+  // ---------- решатель ----------
+
+  // Поиск толщины δ (м), при которой убывающая функция g(δ) обращается в ноль.
+  // g(0) ≤ 0 → изоляция по этому условию не нужна (возвращается 0).
+  function solveThickness(g, maxDelta) {
+    maxDelta = maxDelta || 1.0;
+    var g0 = g(0);
+    if (!(g0 > 0)) return { delta: 0, notNeeded: true, iterations: 0 };
+    var gMax = g(maxDelta);
+    if (gMax > 0) fail('too-thick', 'Требуемая толщина превышает ' + Math.round(maxDelta * 1000) + ' мм. Проверьте исходные данные или выберите другое условие расчёта.');
+    var lo = 0, hi = maxDelta, it = 0;
+    while (hi - lo > 1e-9 && it < 200) {
+      var mid = (lo + hi) / 2;
+      if (g(mid) > 0) lo = mid; else hi = mid;
+      it++;
+    }
+    return { delta: hi, notNeeded: false, iterations: it };
+  }
+  core.solveThickness = solveThickness;
+
+  // ---------- теплопроводность изоляции ----------
+
+  function lambdaAt(model, tm) {
+    if (model.type === 'linear') return model.A + model.B * tm;
+    if (model.type === 'exp') return model.a * Math.exp(model.b * tm);
+    if (model.type === 'constant') return model.value;
+    fail('bad-lambda', 'Неизвестная модель теплопроводности материала');
+  }
+  core.lambdaAt = lambdaAt;
+
+  function lambdaFormula(model) {
+    if (model.type === 'linear') return 'λ = ' + fmt(model.A, 4) + ' + ' + fmt(model.B, 5) + '·t_ср';
+    if (model.type === 'exp') return 'λ = ' + fmt(model.a, 4) + '·e^(' + fmt(model.b, 4) + '·t_ср)';
+    return 'λ = ' + fmt(model.value, 4) + ' (постоянная)';
+  }
+  core.lambdaFormula = lambdaFormula;
+
+  // ---------- теплоотдача ----------
+
+  var SP = function () { return UF.data.sp61; };
+
+  // kind: 'general' | 'surface' | 'condensation' | 'channel'
+  function alphaOuter(kind, env, orientation, emissivity, wind) {
+    var sp = SP();
+    if (kind === 'channel' || env === 'channel') {
+      return { value: sp.alphaChannel.value, ref: 'СП 61, ' + sp.alphaChannel.ref + ' (в канале)' };
+    }
+    if (kind === 'condensation') {
+      return { value: sp.alphaCondensation[emissivity], ref: 'СП 61, ' + sp.alphaCondensation.ref };
+    }
+    if (kind === 'surface') {
+      return { value: sp.alphaSurfaceTemp[emissivity], ref: sp.alphaSurfaceTemp.ref };
+    }
+    var ori = orientation === 'horizontal' ? 'horizontal' : 'vertical';
+    if (env === 'outdoor') {
+      var w = (wind === undefined || wind === null || wind === '') ? 10 : +wind;
+      if (w < 5) w = 5;
+      if (w > 15) w = 15;
+      var a = interp1(sp.alphaB2.outdoorWind, sp.alphaB2.outdoor[ori], w);
+      return { value: a, ref: 'СП 61, ' + sp.alphaB2.ref + ', на открытом воздухе, ветер ' + fmt(w, 1) + ' м/с' };
+    }
+    return { value: sp.alphaB2.room[ori][emissivity], ref: 'СП 61, ' + sp.alphaB2.ref + ', в закрытом помещении' };
+  }
+  core.alphaOuter = alphaOuter;
+
+  // Свойства сухого воздуха по табл. В.7 СП 61
+  function airProps(t) {
+    var tab = SP().airProps, ts = tab.map(function (r) { return r[0]; });
+    function col(k) { return interp1(ts, tab.map(function (r) { return r[k]; }), t); }
+    if (col(1) === null) fail('air-range', 'Свойства воздуха заданы в СП 61 (табл. В.7) для 0…300 °C', 'tIn');
+    return { rho: col(1), cp: col(2), lambda: col(3) / 100, nu: col(4) * 1e-6, pr: col(5) };
+  }
+  core.airProps = airProps;
+
+  // Внутренняя теплоотдача в воздуховоде: Nu = 0,021·Re^0,8·Pr^0,43 (СП 61, В.34д)
+  function alphaInnerDuct(tGas, speed, dEq) {
+    var p = airProps(tGas);
+    var re = speed * dEq / p.nu;
+    var nu = 0.021 * Math.pow(re, 0.8) * Math.pow(p.pr, 0.43);
+    return { value: nu * p.lambda / dEq, re: re, nu: nu, props: p, ref: 'СП 61, формула (В.34д)' };
+  }
+  core.alphaInnerDuct = alphaInnerDuct;
+
+  // ---------- влажный воздух ----------
+
+  // Давление насыщенного водяного пара над водой, кПа. Формула исходной программы
+  // (первоисточник не установлен; проверена по справочным данным: 0,6095 кПа при 0 °C,
+  // 2,340 кПа при 20 °C — погрешность < 1 % в диапазоне 0…40 °C).
+  function saturation(t) { return Math.exp((16.57 * t - 115.72) / (233.77 + 0.997 * t)); }
+  function dewPoint(t, rh) {
+    var e = rh / 100 * saturation(t), l = Math.log(e);
+    return (233.77 * l + 115.72) / (16.57 - 0.997 * l);
+  }
+  core.dewPoint = dewPoint;
+
+  // Расчётный перепад tн − tп по табл. В.4 СП 61
+  function deltaTCondensation(tAir, rh) {
+    var t = SP().deltaTB4;
+    var v = interp2(t.tAir, t.rh, t.rows, tAir, rh);
+    return v === null ? null : { value: v, ref: 'СП 61, ' + t.ref };
+  }
+  core.deltaTCondensation = deltaTCondensation;
+
+  // ---------- геометрия и условный проход ----------
+
+  function dnFromOd(od) {
+    var tab = UF.data.pipes.steelOdToDn;
+    return interp1(tab.map(function (r) { return r[0]; }), tab.map(function (r) { return r[1]; }), od);
+  }
+  core.dnFromOd = dnFromOd;
+
+  function plasticWall(od) {
+    var tab = UF.data.pipes.plasticWall;
+    return interp1(tab.map(function (r) { return r[0]; }), tab.map(function (r) { return r[1]; }), od);
+  }
+  core.plasticWall = plasticWall;
+
+  // ---------- нормы плотности теплового потока ----------
+
+  // env: 'outdoor' | 'room' | 'tunnel' | 'channel'; hours: 'gt5000' | 'le5000'
+  // geom: { type: 'cyl', dn } | { type: 'flat' }
+  function normFor(env, hours, tIn, geom) {
+    var sp = SP(), key, envLabel;
+    var outdoorLike = env === 'outdoor' || env === 'channel';
+    if (outdoorLike) {
+      envLabel = env === 'channel' ? 'в канале (как на открытом воздухе, п. 6.1.1)' : 'на открытом воздухе';
+      if (tIn >= 20) key = hours === 'le5000' ? 'air5000' : 'air9000';
+      else if (tIn <= 0) key = 'airNeg';
+      else fail('norm-gap', 'СП 61 не устанавливает нормы теплопотерь на открытом воздухе для веществ с температурой от 0 до 20 °C (табл. 2, 3 начинаются с 20 °C, табл. 6 — от 0 °C и ниже). Выберите расчёт «Защитить от конденсата» или «Заданные теплопотери».', 'tIn');
+    } else {
+      envLabel = env === 'tunnel' ? 'в тоннеле (как в помещении)' : 'в помещении';
+      if (tIn >= 50) key = hours === 'le5000' ? 'room5000' : 'room9000';
+      else if (tIn <= 0) key = 'roomNeg';
+      else fail('norm-gap', 'СП 61 не устанавливает нормы теплопотерь в помещении для веществ с температурой от 0 до 50 °C (табл. 4, 5 начинаются с 50 °C). Для горячей воды ниже 50 °C выберите «Заданные теплопотери», для холодных сред — «Защитить от конденсата».', 'tIn');
+    }
+    var tab = sp.norms[key];
+    var tMin = Math.min.apply(null, tab.temps), tMax = Math.max.apply(null, tab.temps);
+    if (tIn < tMin || tIn > tMax) fail('norm-range', 'Нормы СП 61 (' + tab.ref + ') заданы для температуры ' + tMin + '…' + tMax + ' °C.', 'tIn');
+
+    var useSurface = geom.type === 'flat' || geom.dn > tab.surfaceFromDy;
+    if (useSurface) {
+      var qF = interp1(tab.temps, tab.surface, tIn);
+      return { type: 'surface', value: qF, unit: 'Вт/м²', key: key,
+        ref: 'СП 61, ' + tab.ref + ', ' + envLabel + ', строка «плоские поверхности и Dу > ' + tab.surfaceFromDy + ' мм»' };
+    }
+    var dns = tab.linear.map(function (r) { return r[0]; });
+    if (geom.dn < dns[0] - 1e-9) fail('dn-small', 'Нормы СП 61 (' + tab.ref + ') начинаются с условного прохода ' + dns[0] + ' мм; для трубы Dу ' + fmt(geom.dn, 1) + ' мм норма не установлена. Выберите «Защитить от конденсата» или «Заданные теплопотери».', 'od');
+    var rows = tab.linear.map(function (r) { return r.slice(1); });
+    var q = interp2(dns, tab.temps, rows, geom.dn, tIn);
+    return { type: 'linear', value: q, unit: 'Вт/м', key: key,
+      ref: 'СП 61, ' + tab.ref + ', ' + envLabel + ', интерполяция по Dу = ' + fmt(geom.dn, 1) + ' мм и t = ' + fmt(tIn, 1) + ' °C' };
+  }
+  core.normFor = normFor;
+
+  // ---------- теплопередача через изолированную стенку ----------
+
+  /*
+   * p = { geom: 'cyl'|'flat', d (м, наружный диаметр трубы), tIn, tOut, alpha,
+   *       lambdaModel, rInner(stateGuess) → { value, label } (опц.),
+   *       rOuter (опц., канал+грунт) }
+   * Возвращает поток q (Вт/м или Вт/м²; знак: >0 — от вещества к среде), температуры.
+   * λ определяется при средней температуре изоляционного слоя методом последовательных
+   * приближений (СП 61, п. В.1).
+   */
+  function heatState(p, delta) {
+    var cyl = p.geom === 'cyl';
+    var D = cyl ? p.d + 2 * delta : null;
+    var Rn = cyl ? 1 / (PI * D * p.alpha) : 1 / p.alpha;
+    var rOut = p.rOuter || 0;
+    var tm = (p.tIn + p.tOut) / 2, lam = lambdaAt(p.lambdaModel, tm), res = null;
+    var rIn = 0, tWallOut = p.tIn;
+    for (var k = 0; k < 100; k++) {
+      lam = lambdaAt(p.lambdaModel, tm);
+      if (!(lam > 0)) fail('lambda-neg', 'Теплопроводность материала вне допустимой области при t = ' + fmt(tm, 1) + ' °C');
+      var Riz = delta > 0 ? (cyl ? Math.log(D / p.d) / (2 * PI * lam) : delta / lam) : 0;
+      rIn = p.rInner ? p.rInner({ tIn: p.tIn, tWallOut: tWallOut }).value : 0;
+      var Rtot = rIn + Riz + Rn + rOut;
+      var q = (p.tIn - p.tOut) / Rtot;
+      tWallOut = p.tIn - q * rIn;
+      var tSurf = tWallOut - q * Riz;
+      var tmNew = (tWallOut + tSurf) / 2;
+      res = { q: q, tSurf: tSurf, tWallOut: tWallOut, tAmbLocal: p.tOut + q * rOut,
+        lambda: lam, tm: tmNew, Riz: Riz, Rn: Rn, rIn: rIn, rOut: rOut, Rtot: Rtot, D: D, delta: delta };
+      if (Math.abs(tmNew - tm) < 1e-7) break;
+      tm = tmNew;
+    }
+    return res;
+  }
+  core.heatState = heatState;
+
+  // ---------- форматирование ----------
+
+  function fmt(x, n) {
+    if (x === null || x === undefined || isNaN(x)) return '—';
+    var s = (+x).toFixed(n === undefined ? 2 : n);
+    return s.replace('.', ',');
+  }
+  core.fmt = fmt;
+  core.PI = PI;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/core/selection.js */
+/*
+ * Принятая (стандартная) толщина — СП 61.13330.2012:
+ *  п. 6.12 — для вспененного каучука принимается ближайшая большая номенклатурная толщина;
+ *            при расчёте по нормам плотности потока и по температуре поверхности допускается
+ *            ближайшая меньшая, если разница не превышает 3 мм;
+ *  п. 6.11 — несколько слоёв одного материала рассматриваются как однослойная конструкция;
+ *  п. 6.16 — при температуре ниже −60 °C однослойная конструкция не допускается.
+ */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  var core = UF.core = UF.core || {};
+  var fmt = function (x, n) { return core.fmt(x, n); };
+
+  function pad(n, w) { var s = String(Math.round(n)); while (s.length < w) s = '0' + s; return s; }
+
+  // Трубки, выпускаемые для наружного диаметра трубы od (мм)
+  function tubesFor(material, od) {
+    var tube = material.products.tube;
+    if (!tube || !(od > 0) || od > tube.maxOd) return [];
+    var out = [];
+    tube.sizes.forEach(function (row) {
+      if (od >= row[0] - 1e-9 && od <= row[1] + 1e-9) {
+        row[3].forEach(function (s) { out.push({ s: s, id: row[2] }); });
+      }
+    });
+    out.sort(function (a, b) { return a.s - b.s; });
+    return out;
+  }
+  core.tubesFor = tubesFor;
+
+  // Минимальная по сумме комбинация до maxLayers слоёв рулона, не меньше need (мм)
+  function bestCombo(list, need, minLayers, maxLayers) {
+    var best = null;
+    function rec(start, layers, sum) {
+      if (layers.length >= minLayers && sum >= need - 1e-9) {
+        if (!best || sum < best.sum - 1e-9 || (Math.abs(sum - best.sum) < 1e-9 && layers.length < best.layers.length)) {
+          best = { sum: sum, layers: layers.slice() };
+        }
+        return;
+      }
+      if (layers.length >= maxLayers) return;
+      for (var i = start; i < list.length; i++) { layers.push(list[i]); rec(i, layers, sum + list[i]); layers.pop(); }
+    }
+    rec(0, [], 0);
+    if (best) best.layers.sort(function (a, b) { return b - a; });
+    return best;
+  }
+
+  /*
+   * opts: { material, od (мм, для трубы) | null, geom: 'cyl'|'flat', productPref: 'auto'|'tube'|'roll',
+   *         allowLower (bool — расчёт по нормам или по t поверхности), tMin (минимальная t объекта, °C),
+   *         protective (bool — конденсат/замерзание) }
+   */
+  function selectThickness(deltaCalcMm, opts) {
+    var m = opts.material, notes = [], alternatives = [];
+    var singleForbidden = opts.tMin !== undefined && opts.tMin < -60;
+    if (singleForbidden) notes.push('Температура ниже −60 °C: однослойная конструкция не допускается (СП 61, п. 6.16) — принята многослойная.');
+
+    if (!(deltaCalcMm >= 1)) {
+      var res0 = { accepted: 0, product: null, alternatives: [], notes: notes, notNeeded: true };
+      if (opts.protective) {
+        var minS = minAvailable(m, opts);
+        if (minS) res0.suggestion = minS;
+      }
+      return res0;
+    }
+
+    var roll = m.products.roll;
+    var rollList = roll ? roll.thicknesses.slice().sort(function (a, b) { return a - b; }) : [];
+    var result = null;
+
+    // 1. Трубка (только для трубы, если есть в сортаменте марки)
+    var tubes = (opts.geom === 'cyl' && opts.productPref !== 'roll' && m.products.tube) ? tubesFor(m, opts.od) : [];
+    if (!singleForbidden && tubes.length) {
+      var t = tubes.filter(function (x) { return x.s >= deltaCalcMm - 1e-9; })[0];
+      if (t) {
+        result = { accepted: t.s, product: { kind: 'tube', layers: [t.s], innerDiameter: t.id,
+          code: m.name + ' ' + pad(t.s, 2) + '×' + pad(t.id, 3), label: 'Трубка ' + pad(t.s, 2) + '×' + pad(t.id, 3) + ' мм' } };
+        if (opts.allowLower) {
+          var lower = tubes.filter(function (x) { return x.s < deltaCalcMm && deltaCalcMm - x.s <= 3 + 1e-9; }).pop();
+          if (lower) alternatives.push({ accepted: lower.s, text: 'Допускается трубка ' + pad(lower.s, 2) + '×' + pad(lower.id, 3) + ' (меньше расчётной на ' + fmt(deltaCalcMm - lower.s, 1) + ' мм ≤ 3 мм, СП 61 п. 6.12)' });
+        }
+      } else {
+        notes.push('Трубки для диаметра ' + fmt(opts.od, 1) + ' мм выпускаются толщиной до ' + tubes[tubes.length - 1].s + ' мм — принят рулонный материал.');
+      }
+    } else if (opts.geom === 'cyl' && opts.productPref === 'tube' && m.products.tube && !tubes.length) {
+      notes.push('Для наружного диаметра ' + fmt(opts.od, 1) + ' мм трубка ' + m.name + ' не выпускается — принят рулон.');
+    } else if (opts.geom === 'cyl' && opts.productPref === 'tube' && !m.products.tube) {
+      notes.push(m.name + ' выпускается только в рулонах.');
+    }
+
+    // 2. Рулон (одно- или многослойно)
+    if (!result) {
+      if (!rollList.length) core.fail('no-product', 'Для материала нет подходящих изделий.');
+      var single = singleForbidden ? null : rollList.filter(function (s) { return s >= deltaCalcMm - 1e-9; })[0];
+      if (single) {
+        result = { accepted: single, product: { kind: 'roll', layers: [single], code: m.name + ' рулон ' + pad(single, 2) + ' мм', label: 'Рулон ' + single + ' мм' } };
+        if (opts.allowLower) {
+          var lowerR = rollList.filter(function (s) { return s < deltaCalcMm && deltaCalcMm - s <= 3 + 1e-9; }).pop();
+          if (lowerR) alternatives.push({ accepted: lowerR, text: 'Допускается рулон ' + lowerR + ' мм (меньше расчётной на ' + fmt(deltaCalcMm - lowerR, 1) + ' мм ≤ 3 мм, СП 61 п. 6.12)' });
+        }
+      } else {
+        var combo = bestCombo(rollList, deltaCalcMm, singleForbidden ? 2 : 2, 4);
+        if (!combo) core.fail('too-thick-product', 'Требуемая толщина ' + fmt(deltaCalcMm, 1) + ' мм не набирается из 4 слоёв рулона. Проверьте исходные данные.');
+        result = { accepted: combo.sum, product: { kind: 'roll', layers: combo.layers,
+          code: m.name + ' рулон, ' + combo.layers.length + ' слоя: ' + combo.layers.join(' + ') + ' мм',
+          label: combo.layers.length + ' слоя рулона: ' + combo.layers.join(' + ') + ' мм' } };
+        if (!singleForbidden) notes.push('Расчётная толщина больше максимальной выпускаемой (' + rollList[rollList.length - 1] + ' мм) — многослойная конструкция из однородного материала рассматривается как однослойная (СП 61, п. 6.11).');
+        notes.push('Слои укладываются с перекрытием швов предыдущего слоя.');
+      }
+    }
+    result.alternatives = alternatives;
+    result.notes = notes;
+    result.rule = 'СП 61.13330.2012, п. 6.12: принимается ближайшая большая номенклатурная толщина';
+    return result;
+  }
+  core.selectThickness = selectThickness;
+
+  function minAvailable(m, opts) {
+    var tubes = opts.geom === 'cyl' && m.products.tube ? tubesFor(m, opts.od) : [];
+    if (tubes.length) return { s: tubes[0].s, text: 'Минимальная выпускаемая трубка: ' + pad(tubes[0].s, 2) + '×' + pad(tubes[0].id, 3) };
+    var r = m.products.roll ? m.products.roll.thicknesses.slice().sort(function (a, b) { return a - b; })[0] : null;
+    return r ? { s: r, text: 'Минимальный выпускаемый рулон: ' + r + ' мм' } : null;
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/core/calcs.js */
+/*
+ * Реестр расчётов и единая точка входа UF.core.calculate(calcId, input).
+ * Каждый расчёт: { id, title, short, objects, envs, fields(input) → [id…], compute(input) }.
+ * Описание полей (FIELDS) используется интерфейсом для построения формы.
+ */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  var core = UF.core = UF.core || {};
+  var PI = Math.PI, fmt = function (x, n) { return core.fmt(x, n); };
+  var fail = function (c, t, f) { core.fail(c, t, f); };
+
+  // ---------------------------------------------------------------- поля
+  var FIELDS = {
+    object:        { label: 'Что изолируем', type: 'choice', group: 'object' },
+    pipeMaterial:  { label: 'Материал трубы', type: 'choice', group: 'object', default: 'steel',
+                     options: [['steel', 'Сталь'], ['copper', 'Медь'], ['plastic', 'Пластик (ПЭ)']] },
+    od:            { label: 'Наружный диаметр трубы', unit: 'мм', type: 'number', group: 'object', min: 5, max: 3000, step: 0.1,
+                     help: 'Внешний диаметр трубы без изоляции. Можно выбрать из списка или ввести своё значение.' },
+    wallPlastic:   { label: 'Толщина стенки трубы', unit: 'мм', type: 'number', group: 'object', min: 0.5, max: 100, step: 0.1, optional: true,
+                     help: 'Если не указать, берётся стенка трубы SDR 41 по ГОСТ 18599.' },
+    wallMetal:     { label: 'Толщина стенки трубы', unit: 'мм', type: 'number', group: 'object', min: 0.3, max: 60, step: 0.1,
+                     help: 'Нужна, чтобы учесть тепло, запасённое в металле трубы.' },
+    orientation:   { label: 'Расположение трубы', type: 'choice', group: 'object', default: 'horizontal',
+                     options: [['horizontal', 'Горизонтально'], ['vertical', 'Вертикально']] },
+    ductShape:     { label: 'Сечение воздуховода', type: 'choice', group: 'object', default: 'round',
+                     options: [['round', 'Круглое'], ['rect', 'Прямоугольное']] },
+    ductD:         { label: 'Диаметр воздуховода', unit: 'мм', type: 'number', group: 'object', min: 50, max: 5000 },
+    ductA:         { label: 'Ширина воздуховода', unit: 'мм', type: 'number', group: 'object', min: 50, max: 5000 },
+    ductB:         { label: 'Высота воздуховода', unit: 'мм', type: 'number', group: 'object', min: 50, max: 5000 },
+    tankShape:     { label: 'Форма ёмкости', type: 'choice', group: 'object', default: 'cylinder',
+                     options: [['cylinder', 'Вертикальный цилиндр'], ['sphere', 'Шар']] },
+    tankD:         { label: 'Диаметр ёмкости', unit: 'м', type: 'number', group: 'object', min: 0.1, max: 50, step: 0.01 },
+    tankH:         { label: 'Высота ёмкости', unit: 'м', type: 'number', group: 'object', min: 0.1, max: 50, step: 0.01 },
+    tankWall:      { label: 'Толщина стенки ёмкости (сталь)', unit: 'мм', type: 'number', group: 'object', min: 1, max: 60, step: 0.1 },
+    tankFill:      { label: 'Заполнение ёмкости', unit: '%', type: 'number', group: 'object', min: 1, max: 100, default: 100 },
+
+    env:           { label: 'Где находится', type: 'choice', group: 'conditions' },
+    tIn:           { label: 'Температура вещества внутри', unit: '°C', type: 'number', group: 'conditions', min: -200, max: 600, step: 0.1 },
+    tEnd:          { label: 'Допустимая конечная температура', unit: '°C', type: 'number', group: 'conditions', min: -200, max: 600, step: 0.1 },
+    tAir:          { label: 'Температура окружающего воздуха', unit: '°C', type: 'number', group: 'conditions', min: -60, max: 60, step: 0.1 },
+    rh:            { label: 'Относительная влажность воздуха', unit: '%', type: 'number', group: 'conditions', min: 40, max: 90, default: 60,
+                     help: 'СП 61 (табл. В.4) задаёт расчёт для влажности 40–90 % и температуры воздуха 10–30 °C.' },
+    hours:         { label: 'Время работы в году', type: 'choice', group: 'conditions', default: 'gt5000',
+                     options: [['gt5000', 'Более 5000 ч'], ['le5000', '5000 ч и менее']] },
+    wind:          { label: 'Скорость ветра', unit: 'м/с', type: 'number', group: 'conditions', min: 5, max: 15, default: 10, optional: true, engineer: true,
+                     help: 'Если нет данных — 10 м/с (СП 61, табл. В.2, прим. 3).' },
+    depthH:        { label: 'Глубина заложения оси канала', unit: 'м', type: 'number', group: 'conditions', min: 0.3, max: 10, step: 0.01 },
+    chanB:         { label: 'Ширина канала (внутр.)', unit: 'м', type: 'number', group: 'conditions', min: 0.2, max: 5, step: 0.01 },
+    chanH:         { label: 'Высота канала (внутр.)', unit: 'м', type: 'number', group: 'conditions', min: 0.2, max: 5, step: 0.01 },
+    soil:          { label: 'Грунт', type: 'choice', group: 'conditions', default: 'loam-1500-15' },
+    surfaceLimit:  { label: 'Допустимая температура поверхности', unit: '°C', type: 'number', group: 'conditions', min: 20, max: 100, step: 0.1,
+                     help: 'СП 61 п. 6.7.1: в помещении 40 °C (вещество ≤150 °C), 45 °C (150–500 °C), 55 °C (>500 °C), 35 °C (вспышка паров <45 °C); на улице 55 °C (металлическое покрытие), 60 °C (другое); вне рабочей зоны до 75 °C.' },
+    stopHours:     { label: 'Время остановки движения', unit: 'ч', type: 'number', group: 'conditions', min: 0.1, max: 500, step: 0.1 },
+    freezeFraction:{ label: 'Допустимая доля замёрзшей воды', unit: '%', type: 'number', group: 'conditions', min: 1, max: 100, default: 25, engineer: true,
+                     help: 'СП 61 (п. В.2.7) принимает 25 %.' },
+    plasticRho:    { label: 'Плотность материала трубы', unit: 'кг/м³', type: 'number', group: 'object', min: 500, max: 3000, default: 950 ,
+                     help: 'Для ПЭ — около 950 кг/м³ (по паспорту трубы).' },
+    plasticC:      { label: 'Теплоёмкость материала трубы', unit: 'кДж/(кг·°C)', type: 'number', group: 'object', min: 0.5, max: 4, step: 0.01, default: 1.9,
+                     help: 'Для ПЭ — около 1,9 кДж/(кг·°C) (по паспорту трубы).' },
+    length:        { label: 'Длина участка', unit: 'м', type: 'number', group: 'conditions', min: 0.1, max: 100000, step: 0.1 },
+    flow:          { label: 'Расход', type: 'number', group: 'conditions', min: 0.0001, max: 1e7, step: 0.001 },
+    flowUnit:      { label: 'Единица расхода', type: 'choice', group: 'conditions', default: 'kgh',
+                     options: [['kgh', 'кг/ч'], ['m3h', 'м³/ч'], ['ms', 'м/с (скорость)']] },
+    fluid:         { label: 'Вещество', type: 'choice', group: 'conditions', default: 'water',
+                     options: [['water', 'Вода'], ['air', 'Воздух'], ['custom', 'Другое (задать свойства)']] },
+    fluidRho:      { label: 'Плотность вещества', unit: 'кг/м³', type: 'number', group: 'conditions', min: 0.1, max: 3000 },
+    fluidC:        { label: 'Теплоёмкость вещества', unit: 'кДж/(кг·°C)', type: 'number', group: 'conditions', min: 0.1, max: 10, step: 0.01 },
+    qGiven:        { label: 'Допустимые теплопотери', type: 'number', group: 'conditions', min: 0.1, max: 100000, step: 0.1 },
+    thicknessGiven:{ label: 'Толщина изоляции', unit: 'мм', type: 'number', group: 'conditions', min: 1, max: 500, step: 1 },
+    gasRh:         { label: 'Влажность газа (воздуха) внутри', unit: '%', type: 'number', group: 'conditions', min: 5, max: 100, default: 60 },
+    gasSpeed:      { label: 'Скорость потока внутри', unit: 'м/с', type: 'number', group: 'conditions', min: 0.5, max: 40, default: 5 },
+    regime:        { label: 'Температурный график сети', type: 'choice', group: 'conditions', default: '95-70',
+                     options: [['95-70', '95/70 °C'], ['150-70', '150/70 °C'], ['180-70', '180/70 °C'], ['custom', 'Постоянная температура (количественное регулирование)']] },
+    tSupply:       { label: 'Температура в подающей трубе', unit: '°C', type: 'number', group: 'conditions', min: 20, max: 200 },
+    operation:     { label: 'Режим работы сети', type: 'choice', group: 'conditions', default: 'year',
+                     options: [['year', 'Круглый год'], ['season', 'Только отопительный период']] },
+    seasonDays:    { label: 'Отопительный период', unit: 'сут', type: 'number', group: 'conditions', min: 1, max: 365, default: 205 },
+    deltaTManual:  { label: 'Допустимый перепад tн − tп (вручную)', unit: '°C', type: 'number', group: 'conditions', min: 0.1, max: 30, step: 0.1, optional: true, engineer: true,
+                     help: 'Только если условия выходят за табл. В.4 СП 61. Обычно оставьте пустым.' },
+
+    materialId:    { label: 'Материал', type: 'choice', group: 'material', default: 'unionflex-std' },
+    lambdaModel:   { label: 'Теплопроводность материала', type: 'choice', group: 'material', optional: true, engineer: true },
+    product:       { label: 'Вид изделия', type: 'choice', group: 'material', default: 'auto',
+                     options: [['auto', 'Подобрать автоматически'], ['tube', 'Трубка'], ['roll', 'Рулон']] },
+    covering:      { label: 'Покрытие', type: 'choice', group: 'material', default: 'none' }
+  };
+  core.FIELDS = FIELDS;
+
+  var OBJECT_LABELS = { pipe: 'Трубопровод', flat: 'Ёмкость / плоская поверхность', duct: 'Воздуховод', tank: 'Ёмкость с водой' };
+  var ENV_LABELS = { outdoor: 'На улице', room: 'В помещении', tunnel: 'В тоннеле', channel: 'В непроходном канале' };
+  core.OBJECT_LABELS = OBJECT_LABELS; core.ENV_LABELS = ENV_LABELS;
+
+  // ---------------------------------------------------------------- подготовка
+
+  function num(inp, id, required) {
+    var v = inp[id], f = FIELDS[id] || {};
+    if (v === undefined || v === null || v === '') {
+      if (f.default !== undefined && typeof f.default === 'number') return f.default;
+      if (required === false) return null;
+      fail('empty', 'Заполните поле «' + (f.label || id) + '».', id);
+    }
+    var x = typeof v === 'number' ? v : parseFloat(String(v).replace(',', '.').replace(/\s/g, ''));
+    if (!isFinite(x)) fail('nan', 'В поле «' + (f.label || id) + '» должно быть число.', id);
+    if (f.min !== undefined && x < f.min) fail('min', '«' + f.label + '»: значение должно быть не меньше ' + fmt(f.min, f.min % 1 ? 1 : 0) + (f.unit ? ' ' + f.unit : '') + '.', id);
+    if (f.max !== undefined && x > f.max) fail('max', '«' + f.label + '»: значение должно быть не больше ' + fmt(f.max, f.max % 1 ? 1 : 0) + (f.unit ? ' ' + f.unit : '') + '.', id);
+    return x;
+  }
+  function opt(inp, id) { var v = inp[id]; return (v === undefined || v === null || v === '') ? FIELDS[id].default : v; }
+
+  function material(inp) {
+    var id = opt(inp, 'materialId');
+    var m = UF.data.materials.filter(function (x) { return x.id === id; })[0];
+    if (!m) fail('material', 'Выберите материал.', 'materialId');
+    var modelKey = inp.lambdaModel && m.lambdaModels[inp.lambdaModel] ? inp.lambdaModel : m.defaultLambda;
+    var cov = opt(inp, 'covering');
+    var allCov = [];
+    Object.keys(m.products).forEach(function (k) { allCov = allCov.concat(m.products[k].coverings); });
+    if (allCov.indexOf(cov) < 0) cov = 'none';
+    return { m: m, model: m.lambdaModels[modelKey], modelKey: modelKey, coveringId: cov, covering: UF.data.coverings[cov] };
+  }
+
+  // Геометрия объекта: { geom: 'cyl'|'flat', d (м), od (мм), dn, dEq (м), perimeter (м), label }
+  function geometry(inp, obj) {
+    if (obj === 'pipe') {
+      var od = num(inp, 'od'), dn = core.dnFromOd(od);
+      if (dn === null) dn = od > 1420 ? 1500 : 0;
+      return { geom: 'cyl', d: od / 1000, od: od, dn: dn, label: 'труба Ø' + fmt(od, od % 1 ? 1 : 0) + ' мм' };
+    }
+    if (obj === 'duct') {
+      if (opt(inp, 'ductShape') === 'rect') {
+        var a = num(inp, 'ductA'), b = num(inp, 'ductB');
+        return { geom: 'flat', rect: true, a: a / 1000, b: b / 1000, dEq: 2 * a * b / (a + b) / 1000, perimeter: 2 * (a + b) / 1000,
+          label: 'воздуховод ' + a + '×' + b + ' мм' };
+      }
+      var dd = num(inp, 'ductD');
+      if (dd >= 2000) return { geom: 'flat', d: dd / 1000, dEq: dd / 1000, perimeter: PI * dd / 1000, label: 'воздуховод Ø' + dd + ' мм (как плоская стенка, D ≥ 2 м — СП 61 (В.16))' };
+      return { geom: 'cyl', d: dd / 1000, od: dd, dn: core.dnFromOd(dd), dEq: dd / 1000, label: 'воздуховод Ø' + dd + ' мм' };
+    }
+    return { geom: 'flat', label: obj === 'tank' ? 'ёмкость' : 'плоская поверхность' };
+  }
+
+  function emissivityOf(mat) { return mat.covering.emissivity; }
+
+  // Сопротивление стенки пластиковой трубы (СП 61 п. 6.37, (В.7))
+  function plasticWallR(inp, g, steps) {
+    if (inp.object !== 'pipe' || opt(inp, 'pipeMaterial') !== 'plastic') return null;
+    var s = num(inp, 'wallPlastic', false);
+    if (s === null) s = core.plasticWall(g.od);
+    if (s === null) fail('wall', 'Укажите толщину стенки пластиковой трубы.', 'wallPlastic');
+    if (2 * s >= g.od) fail('wall', 'Толщина стенки должна быть меньше половины диаметра.', 'wallPlastic');
+    var pl = UF.data.pipes.plasticLambda, ln = Math.log(g.od / (g.od - 2 * s));
+    steps.push({ title: 'Стенка пластиковой трубы', formula: 'R_ст = ln(d/(d − 2s)) / (2π·λ_ст), λ_ст = ' + fmt(pl.A, 2) + ' + ' + fmt(pl.B, 3) + '·t',
+      values: 's = ' + fmt(s, 1) + ' мм', ref: 'СП 61, (В.7), п. 6.37; λ_ст — ' + pl.source });
+    return function (st) {
+      var tm = (st.tIn + st.tWallOut) / 2, lam = pl.A + pl.B * tm;
+      return { value: ln / (2 * PI * lam) };
+    };
+  }
+
+  function channelR(inp, g, steps) {
+    var H = num(inp, 'depthH'), b = num(inp, 'chanB'), h = num(inp, 'chanH');
+    if (H <= h / 2) fail('channel', 'Глубина заложения оси канала должна быть больше половины его высоты.', 'depthH');
+    var soilId = opt(inp, 'soil'), soil = UF.data.sp61.soils.filter(function (s) { return s.id === soilId; })[0];
+    if (!soil) fail('soil', 'Выберите грунт.', 'soil');
+    var ak = UF.data.sp61.alphaChannel.value;
+    var dEq = 2 * b * h / (b + h);
+    var Rkan = 1 / (PI * ak * dEq);
+    var Rgr = Math.log(3.5 * (H / h) * Math.pow(h / b, 0.25)) / ((5.7 + 0.5 * b / h) * soil.value);
+    if (!(Rgr > 0)) fail('channel', 'Для заданных размеров канала формула СП 61 (В.40) неприменима. Проверьте глубину и размеры.', 'depthH');
+    steps.push({ title: 'Канал и грунт', formula: 'R_кан = 1/(π·α_к·2bh/(b+h)); R_гр = ln[3,5·(H/h)·(h/b)^0,25] / ((5,7 + 0,5·b/h)·λ_гр)',
+      values: 'α_к = ' + ak + ' Вт/(м²·°C), b = ' + fmt(b) + ' м, h = ' + fmt(h) + ' м, H = ' + fmt(H) + ' м, λ_гр = ' + fmt(soil.value) + ' Вт/(м·°C) (' + soil.label + ')',
+      result: 'R_кан = ' + fmt(Rkan, 4) + ', R_гр = ' + fmt(Rgr, 4) + ' м·°C/Вт', ref: 'СП 61, (В.39), (В.40), табл. В.6' });
+    return { value: Rkan + Rgr, Rkan: Rkan, Rgr: Rgr, b: b, h: h };
+  }
+
+  function checkTemps(mat, tMin, tMax, warnings, errors) {
+    var m = mat.m, r = m.tempRange;
+    var lowLimit = r[0];
+    if (tMax > r[1] + 1e-9) fail('mat-temp', m.name + ' применяется до +' + r[1] + ' °C, а температура объекта +' + fmt(tMax, 1) + ' °C.', 'tIn');
+    if (tMin < r[0] - 1e-9) {
+      if (m.multilayerMin !== undefined && tMin >= m.multilayerMin) warnings.push({ code: 'multilayer', text: m.name + ' ниже ' + r[0] + ' °C применяется только в многослойной конструкции (' + m.tempNotes + ').' });
+      else fail('mat-temp', m.name + ' применяется от ' + r[0] + ' °C, а температура объекта ' + fmt(tMin, 1) + ' °C.', 'tIn');
+    }
+    if (mat.model.maxTemp !== undefined && tMax > mat.model.maxTemp) warnings.push({ code: 'lambda-range', text: 'Зависимость теплопроводности (СП 61, табл. Б.5) установлена до ' + mat.model.maxTemp + ' °C.' });
+    var cr = mat.covering.tempRange;
+    if (cr && (tMin < cr[0] || tMax > cr[1])) fail('cov-temp', 'Исполнение «' + mat.covering.label + '» применяется при температуре ' + cr[0] + '…+' + cr[1] + ' °C. Выберите другое покрытие.', 'covering');
+  }
+
+  // ---------------------------------------------------------------- общий каркас
+
+  function context(inp, calc) {
+    var obj = inp.object && calc.objects.indexOf(inp.object) >= 0 ? inp.object : calc.objects[0];
+    var env = inp.env && calc.envs(obj).indexOf(inp.env) >= 0 ? inp.env : calc.envs(obj)[0];
+    var ctx = { inp: inp, obj: obj, env: env, steps: [], warnings: [], coefficients: [], refs: [] };
+    ctx.mat = material(inp);
+    ctx.g = geometry(inp, obj);
+    ctx.steps.push({ title: 'Объект', values: OBJECT_LABELS[obj] + ', ' + ctx.g.label + ', ' + ENV_LABELS[env] });
+    ctx.coefficients.push({ name: 'Теплопроводность изоляции', value: core.lambdaFormula(ctx.mat.model), unit: 'Вт/(м·°C)', source: ctx.mat.model.source });
+    return ctx;
+  }
+
+  function airDefault(inp, env) {
+    if (inp.tAir !== undefined && inp.tAir !== null && inp.tAir !== '') return num(inp, 'tAir');
+    if (env === 'room') return 20;
+    if (env === 'tunnel') return 40;
+    return num(inp, 'tAir');
+  }
+
+  function stateParams(ctx, over) {
+    var p = { geom: ctx.g.geom, d: ctx.g.d, lambdaModel: ctx.mat.model };
+    for (var k in over) p[k] = over[k];
+    return p;
+  }
+
+  function finishThickness(ctx, sol, p, extra) {
+    var deltaMm = sol.delta * 1000;
+    var st = core.heatState(p, sol.delta);
+    var sel = core.selectThickness(deltaMm, { material: ctx.mat.m, od: ctx.g.od, geom: ctx.g.geom,
+      productPref: opt(ctx.inp, 'product'), allowLower: !!extra.allowLower, tMin: extra.tMin, protective: !!extra.protective });
+    var acc = sel.accepted ? core.heatState(p, sel.accepted / 1000) : null;
+    ctx.steps.push({ title: 'Решение', formula: extra.condition,
+      result: sol.notNeeded ? 'условие выполняется без изоляции' : 'δ = ' + fmt(deltaMm, 1) + ' мм (λ = ' + fmt(st.lambda, 4) + ' Вт/(м·°C) при t_ср = ' + fmt(st.tm, 1) + ' °C)',
+      ref: extra.ref });
+    return {
+      thicknessCalc_mm: sol.notNeeded ? 0 : deltaMm,
+      thicknessAccepted_mm: sel.accepted,
+      notNeeded: !!sel.notNeeded,
+      selection: sel,
+      atCalc: st,
+      atAccepted: acc
+    };
+  }
+
+  function unitQ(g) { return g.geom === 'cyl' ? 'Вт/м' : 'Вт/м²'; }
+
+  // ---------------------------------------------------------------- расчёты
+
+  var CALCS = [];
+
+  // 1. Конденсация на поверхности (СП 61 п. 6.8, В.2.4)
+  CALCS.push({
+    id: 'condensation', icon: 'droplet', title: 'Защитить от конденсата',
+    short: 'Холодная труба, воздуховод или ёмкость не будут «потеть»',
+    objects: ['pipe', 'duct', 'flat'],
+    envs: function () { return ['room']; },
+    fields: function (i) {
+      return objFields(i).concat(['env', 'tIn', 'tAir', 'rh', 'deltaTManual']).concat(matFields(i));
+    },
+    compute: function (ctx) {
+      var inp = ctx.inp, tIn = num(inp, 'tIn'), tAir = airDefault(inp, ctx.env);
+      if (!(tIn < tAir)) fail('temps', 'Конденсат на изоляции образуется только если вещество холоднее воздуха. Температура вещества должна быть ниже ' + fmt(tAir, 1) + ' °C.', 'tIn');
+      checkTemps(ctx.mat, tIn, tAir, ctx.warnings);
+      var rh = num(inp, 'rh'), dtm = num(inp, 'deltaTManual', false), dT;
+      if (dtm !== null) { dT = { value: dtm, ref: 'задано вручную (инженерный режим)' }; ctx.warnings.push({ code: 'manual-dt', text: 'Перепад tн − tп задан вручную.' }); }
+      else {
+        dT = core.deltaTCondensation(tAir, rh);
+        if (!dT) fail('b4-range', 'СП 61 (табл. В.4) задаёт допустимый перепад для воздуха 10–30 °C и влажности 40–90 %. Для других условий задайте перепад вручную в инженерном режиме.', 'tAir');
+      }
+      var tS = tAir - dT.value;
+      var a = core.alphaOuter('condensation', ctx.env, null, emissivityOf(ctx.mat));
+      ctx.coefficients.push({ name: 'Допустимый перепад tн − tп', value: fmt(dT.value, 2), unit: '°C', source: dT.ref });
+      ctx.coefficients.push({ name: 'Коэффициент теплоотдачи α', value: fmt(a.value, 1), unit: 'Вт/(м²·°C)', source: a.ref + ' (' + ctx.mat.covering.label + ')' });
+      ctx.steps.push({ title: 'Минимальная температура поверхности', formula: 't_п = t_н − Δt', values: 't_н = ' + fmt(tAir, 1) + ' °C, Δt = ' + fmt(dT.value, 2) + ' °C', result: 't_п = ' + fmt(tS, 2) + ' °C', ref: dT.ref });
+      var p = stateParams(ctx, { tIn: tIn, tOut: tAir, alpha: a.value, rInner: plasticWallR(inp, ctx.g, ctx.steps) });
+      var sol = core.solveThickness(function (d) { return (tAir - core.heatState(p, d).tSurf) - dT.value; });
+      var r = finishThickness(ctx, sol, p, { protective: true, tMin: tIn,
+        condition: ctx.g.geom === 'cyl' ? 'ln(D/d) = 2πλ·R_н·(t_п − t_в)/(t_н − t_п), R_н = 1/(π·D·α)' : 'δ = λ·(t_п − t_в)/(α·(t_н − t_п))',
+        ref: 'СП 61, (В.33), (В.34)' });
+      r.explanation = r.notNeeded ? 'При этих условиях поверхность без изоляции не холоднее ' + fmt(tS, 1) + ' °C — конденсата не будет.'
+        : 'Чтобы на изоляции не выпадала влага при ' + fmt(tAir, 0) + ' °C и влажности ' + fmt(rh, 0) + ' %, её поверхность должна быть не холоднее ' + fmt(tS, 1) + ' °C. Для этого нужно ' + fmt(r.thicknessCalc_mm, 1) + ' мм изоляции.';
+      r.extra = [{ label: 'Температура поверхности при принятой толщине', value: r.atAccepted ? fmt(r.atAccepted.tSurf, 1) + ' °C' : '—' },
+                 { label: 'Минимально допустимая температура поверхности', value: fmt(tS, 1) + ' °C' }];
+      ctx.refs.push('СП 61.13330.2012, п. 6.8, приложение В.2.4, табл. В.4');
+      return r;
+    }
+  });
+
+  // 2. По нормам плотности теплового потока (СП 61 п. 6.1, В.2.1)
+  CALCS.push({
+    id: 'norm', icon: 'flame', title: 'Соответствовать нормам теплопотерь',
+    short: 'Толщина, при которой теплопотери не превышают нормы СП 61',
+    objects: ['pipe', 'flat'],
+    envs: function (o) { return o === 'pipe' ? ['outdoor', 'room', 'tunnel', 'channel'] : ['outdoor', 'room']; },
+    fields: function (i) {
+      var f = objFields(i).concat(['env', 'tIn', 'tAir', 'hours']);
+      if (i.env === 'outdoor') f.push('wind');
+      if (i.env === 'channel') f = f.concat(['depthH', 'chanB', 'chanH', 'soil']);
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) { return normLike(ctx, 'norm'); }
+  });
+
+  // 3. По заданной температуре поверхности (СП 61 п. 6.7, В.2.3)
+  CALCS.push({
+    id: 'surface', icon: 'hand-stop', title: 'Безопасная температура поверхности',
+    short: 'Поверхность изоляции не обожжёт при касании',
+    objects: ['pipe', 'flat'],
+    envs: function () { return ['room', 'outdoor']; },
+    fields: function (i) { return objFields(i).concat(['env', 'tIn', 'tAir', 'surfaceLimit']).concat(matFields(i)); },
+    compute: function (ctx) {
+      var inp = ctx.inp, tIn = num(inp, 'tIn'), tAir = airDefault(inp, ctx.env), tLim = num(inp, 'surfaceLimit');
+      if (!(tIn > tLim)) fail('temps', 'Температура вещества должна быть выше допустимой температуры поверхности (' + fmt(tLim, 0) + ' °C) — иначе изоляция по этому условию не нужна.', 'tIn');
+      if (!(tLim > tAir)) fail('temps', 'Допустимая температура поверхности должна быть выше температуры воздуха.', 'surfaceLimit');
+      checkTemps(ctx.mat, tAir, tIn, ctx.warnings);
+      var a = core.alphaOuter('surface', ctx.env, opt(inp, 'orientation'), emissivityOf(ctx.mat));
+      ctx.coefficients.push({ name: 'Коэффициент теплоотдачи α', value: fmt(a.value, 1), unit: 'Вт/(м²·°C)', source: a.ref + ' (' + ctx.mat.covering.label + ')' });
+      var p = stateParams(ctx, { tIn: tIn, tOut: tAir, alpha: a.value, rInner: plasticWallR(inp, ctx.g, ctx.steps) });
+      var sol = core.solveThickness(function (d) { return (core.heatState(p, d).tSurf - tAir) - (tLim - tAir); });
+      var r = finishThickness(ctx, sol, p, { allowLower: true, tMin: tAir,
+        condition: ctx.g.geom === 'cyl' ? 'ln(D/d) = 2πλ·R_н·(t_в − t_п)/(t_п − t_н), R_н = 1/(π·D·α)' : 'δ = λ·(t_в − t_п)/(α·(t_п − t_н))',
+        ref: 'СП 61, (В.29), (В.30)' });
+      r.explanation = r.notNeeded ? 'Поверхность и без изоляции не нагреется выше ' + fmt(tLim, 0) + ' °C.'
+        : 'Чтобы поверхность изоляции не нагревалась выше ' + fmt(tLim, 0) + ' °C при воздухе ' + fmt(tAir, 0) + ' °C, нужно ' + fmt(r.thicknessCalc_mm, 1) + ' мм изоляции.';
+      r.extra = [{ label: 'Температура поверхности при принятой толщине', value: r.atAccepted ? fmt(r.atAccepted.tSurf, 1) + ' °C' : '—' },
+                 { label: 'Теплопотери при принятой толщине', value: r.atAccepted ? fmt(Math.abs(r.atAccepted.q), 1) + ' ' + unitQ(ctx.g) : '—' }];
+      ctx.refs.push('СП 61.13330.2012, п. 6.7, приложение В.2.3');
+      ctx.refs.push('СП 41-103-2000, п. 2.2.3 (коэффициенты теплоотдачи)');
+      return r;
+    }
+  });
+
+  // 4. Защита от замерзания (СП 61 п. 6.6, В.2.7)
+  CALCS.push({
+    id: 'freezing', icon: 'snowflake', title: 'Не допустить замерзания',
+    short: 'Вода не замёрзнет, пока движение остановлено',
+    objects: ['pipe', 'tank'],
+    envs: function (o) { return o === 'pipe' ? ['outdoor', 'channel'] : ['outdoor']; },
+    fields: function (i) {
+      var f = objFields(i);
+      if (i.object !== 'tank') {
+        var pm = i.pipeMaterial || 'steel';
+        f = f.concat(pm === 'plastic' ? ['plasticRho', 'plasticC'] : ['wallMetal']);
+      }
+      f = f.concat(['env', 'tIn', 'tAir', 'stopHours', 'freezeFraction']);
+      if (i.env === 'outdoor') f.push('wind');
+      if (i.env === 'channel') f = f.concat(['depthH', 'chanB', 'chanH', 'soil']);
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) {
+      var inp = ctx.inp, tIn = num(inp, 'tIn'), tAir = num(inp, 'tAir'), Z = num(inp, 'stopHours');
+      var w = UF.data.fluids.water, tz = w.freezeTemp, frac = num(inp, 'freezeFraction') / 100;
+      if (!(tAir < tz)) fail('temps', 'Замерзание возможно только при отрицательной температуре воздуха.', 'tAir');
+      if (!(tIn > tz)) fail('temps', 'Начальная температура воды должна быть выше 0 °C.', 'tIn');
+      checkTemps(ctx.mat, tAir, tIn, ctx.warnings);
+      var tMean = (tIn + tz) / 2;
+      var rhoW = core.interp1(w.table.map(function (r) { return r[0]; }), w.table.map(function (r) { return r[1]; }), Math.max(0, tMean));
+      var cW = core.interp1(w.table.map(function (r) { return r[0]; }), w.table.map(function (r) { return r[2]; }), Math.max(0, tMean));
+      var Vl, VwRhoC, perUnit, a, rOut = 0, geomNote;
+      if (ctx.obj === 'pipe') {
+        var pm = opt(inp, 'pipeMaterial'), s, rhoS, cS;
+        if (pm === 'plastic') { s = num(inp, 'wallPlastic', false); if (s === null) s = core.plasticWall(ctx.g.od); rhoS = num(inp, 'plasticRho'); cS = num(inp, 'plasticC'); }
+        else { s = num(inp, 'wallMetal'); rhoS = UF.data.pipes.wall[pm].rho; cS = UF.data.pipes.wall[pm].c; }
+        var dIn = ctx.g.d - 2 * s / 1000;
+        if (!(dIn > 0)) fail('wall', 'Толщина стенки слишком велика для этого диаметра.', pm === 'plastic' ? 'wallPlastic' : 'wallMetal');
+        Vl = PI * dIn * dIn / 4;
+        var Vs = PI * (ctx.g.d * ctx.g.d - dIn * dIn) / 4;
+        VwRhoC = Vs * rhoS * cS;
+        perUnit = 1; geomNote = 'на 1 м трубы: V_ж = ' + fmt(Vl * 1000, 3) + ' л, V_ст = ' + fmt(Vs * 1e6, 0) + ' см³';
+        a = ctx.env === 'channel' ? core.alphaOuter('channel', 'channel') : core.alphaOuter('general', ctx.env, opt(inp, 'orientation'), emissivityOf(ctx.mat), num(inp, 'wind', false));
+        if (ctx.env === 'channel') rOut = channelR(inp, ctx.g, ctx.steps).value;
+      } else {
+        var D = num(inp, 'tankD'), shape = opt(inp, 'tankShape'), sw = num(inp, 'tankWall') / 1000, fill = num(inp, 'tankFill') / 100;
+        var F, V;
+        if (shape === 'sphere') { F = PI * D * D; V = PI * D * D * D / 6; }
+        else { var H = num(inp, 'tankH'); F = PI * D * H + 2 * PI * D * D / 4; V = PI * D * D / 4 * H; }
+        Vl = (V - F * sw) * fill; VwRhoC = F * sw * UF.data.pipes.wall.steel.rho * UF.data.pipes.wall.steel.c;
+        perUnit = F; geomNote = 'площадь F = ' + fmt(F, 2) + ' м², объём воды ' + fmt(Vl, 2) + ' м³';
+        a = core.alphaOuter('general', 'outdoor', 'vertical', emissivityOf(ctx.mat), num(inp, 'wind', false));
+        ctx.g = { geom: 'flat', label: ctx.g.label };
+      }
+      var X = 2 * (tIn - tz) * (Vl * rhoW * cW + VwRhoC) / (tIn + tz - 2 * tAir) + frac * Vl * rhoW * w.latentHeat / (tz - tAir);
+      var Rreq = 3.6 * Z * perUnit / X;
+      ctx.coefficients.push({ name: 'Коэффициент теплоотдачи α', value: fmt(a.value, 1), unit: 'Вт/(м²·°C)', source: a.ref });
+      ctx.coefficients.push({ name: 'Вода: ρ, c при ' + fmt(tMean, 1) + ' °C', value: fmt(rhoW, 1) + ' кг/м³; ' + fmt(cW, 3) + ' кДж/(кг·°C)', unit: '', source: w.source });
+      ctx.coefficients.push({ name: 'Скрытая теплота замерзания', value: w.latentHeat, unit: 'кДж/кг', source: 'справочное значение' });
+      ctx.steps.push({ title: 'Требуемое термическое сопротивление', formula: 'R = 3,6·Z / [2(t_в − t_з)(V_ж·ρ_ж·c_ж + V_ст·ρ_ст·c_ст)/(t_в + t_з − 2t_н) + f·V_ж·ρ_ж·r/(t_з − t_н)]',
+        values: 'Z = ' + fmt(Z, 1) + ' ч, t_в = ' + fmt(tIn, 1) + ' °C, t_з = 0 °C, t_н = ' + fmt(tAir, 1) + ' °C, f = ' + fmt(frac * 100, 0) + ' %, ' + geomNote,
+        result: 'R = ' + fmt(Rreq, 4) + (ctx.g.geom === 'cyl' ? ' м·°C/Вт' : ' м²·°C/Вт'), ref: 'СП 61, (В.34е); тепло, запасённое в стенке трубы, суммируется с теплом воды' });
+      var p = stateParams(ctx, { geom: ctx.g.geom, tIn: tMean, tOut: tAir, alpha: a.value, rOuter: rOut, rInner: plasticWallR(inp, ctx.g, ctx.steps) });
+      var sol = core.solveThickness(function (d) { return Rreq - core.heatState(p, d).Rtot; });
+      var r = finishThickness(ctx, sol, p, { protective: true, tMin: tAir, condition: 'R_из + R_н' + (rOut ? ' + R_кан + R_гр' : '') + ' = R', ref: 'СП 61, (В.34е), (В.20)' });
+      r.explanation = r.notNeeded ? 'За ' + fmt(Z, 1) + ' ч остановки замёрзнет не более ' + fmt(frac * 100, 0) + ' % воды даже без изоляции.'
+        : 'Чтобы за ' + fmt(Z, 1) + ' ч остановки при ' + fmt(tAir, 0) + ' °C замёрзло не более ' + fmt(frac * 100, 0) + ' % воды, нужно ' + fmt(r.thicknessCalc_mm, 1) + ' мм изоляции.';
+      r.extra = [{ label: 'Требуемое сопротивление теплопередаче', value: fmt(Rreq, 3) + (ctx.g.geom === 'cyl' ? ' м·°C/Вт' : ' м²·°C/Вт') }];
+      ctx.refs.push('СП 61.13330.2012, п. 6.6, приложение В.2.7');
+      return r;
+    }
+  });
+
+  // 5. Изменение температуры вещества по длине (СП 61 п. 6.4, В.2.2)
+  CALCS.push({
+    id: 'tempChange', icon: 'temperature', title: 'Сохранить температуру носителя',
+    short: 'Вещество остынет (нагреется) по длине не больше заданного',
+    objects: ['pipe', 'duct'],
+    envs: function (o) { return o === 'pipe' ? ['outdoor', 'room', 'tunnel', 'channel'] : ['outdoor', 'room']; },
+    fields: function (i) {
+      var f = objFields(i).concat(['env', 'tIn', 'tEnd', 'tAir', 'length', 'flow', 'flowUnit']);
+      if (i.object !== 'duct') f.push('fluid');
+      if (i.object !== 'duct' && i.fluid === 'custom') f = f.concat(['fluidRho', 'fluidC']);
+      if (i.env === 'outdoor') f.push('wind');
+      if (i.env === 'channel') f = f.concat(['depthH', 'chanB', 'chanH', 'soil']);
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) {
+      var inp = ctx.inp, t1 = num(inp, 'tIn'), t2 = num(inp, 'tEnd'), tAir = airDefault(inp, ctx.env), L = num(inp, 'length');
+      if (!((t1 - t2) * (t2 - tAir) > 0)) fail('temps', 'Конечная температура должна быть между начальной температурой вещества и температурой окружающей среды.', 'tEnd');
+      checkTemps(ctx.mat, Math.min(t1, t2, tAir), Math.max(t1, t2, tAir), ctx.warnings);
+      var tm = (t1 + t2) / 2, fluid = ctx.obj === 'duct' ? 'air' : opt(inp, 'fluid'), rho, c, src;
+      if (fluid === 'water') {
+        var w = UF.data.fluids.water;
+        rho = core.interp1(w.table.map(function (r) { return r[0]; }), w.table.map(function (r) { return r[1]; }), tm);
+        c = core.interp1(w.table.map(function (r) { return r[0]; }), w.table.map(function (r) { return r[2]; }), tm);
+        if (rho === null) fail('fluid-range', 'Свойства воды заданы для 0…150 °C.', 'tIn');
+        src = w.source;
+      } else if (fluid === 'air') { var ap = core.airProps(tm); rho = ap.rho; c = ap.cp; src = 'СП 61, табл. В.7'; }
+      else { rho = num(inp, 'fluidRho'); c = num(inp, 'fluidC'); src = 'задано пользователем'; }
+      var flow = num(inp, 'flow'), unit = opt(inp, 'flowUnit'), G;
+      if (unit === 'kgh') G = flow;
+      else if (unit === 'm3h') G = flow * rho;
+      else {
+        var area = ctx.g.rect ? ctx.g.a * ctx.g.b : PI * Math.pow(ctx.g.d, 2) / 4;
+        G = flow * area * rho * 3600;
+      }
+      var ratio = (t1 - tAir) / (t2 - tAir), RL, formula;
+      if (ratio >= 2) { RL = 3.6 * L / (G * c * Math.log(ratio)); formula = 'R = 3,6·l / (G·c·ln[(t′ − t_н)/(t″ − t_н)])  (при отношении ≥ 2)'; }
+      else { RL = 3.6 * L * (tm - tAir) / (G * c * (t1 - t2)); formula = 'R = 3,6·l·((t′ + t″)/2 − t_н) / (G·c·(t′ − t″))  (при отношении < 2)'; }
+      var R = RL;
+      if (ctx.g.geom === 'flat') R = RL * ctx.g.perimeter;
+      ctx.coefficients.push({ name: 'Вещество: ρ, c при ' + fmt(tm, 1) + ' °C', value: fmt(rho, 3) + ' кг/м³; ' + fmt(c, 3) + ' кДж/(кг·°C)', unit: '', source: src });
+      ctx.steps.push({ title: 'Требуемое полное сопротивление', formula: formula,
+        values: 'l = ' + fmt(L, 1) + ' м, G = ' + fmt(G, 1) + ' кг/ч, t′ = ' + fmt(t1, 1) + ', t″ = ' + fmt(t2, 1) + ', t_н = ' + fmt(tAir, 1) + ' °C, отношение = ' + fmt(ratio, 3),
+        result: 'R = ' + fmt(RL, 4) + ' м·°C/Вт' + (ctx.g.geom === 'flat' ? ' → на 1 м² поверхности: ' + fmt(R, 4) + ' м²·°C/Вт (×периметр ' + fmt(ctx.g.perimeter, 3) + ' м)' : ''),
+        ref: 'СП 61, (В.26), (В.27); K = 1' });
+      var a, rOut = 0;
+      if (ctx.env === 'channel') { a = core.alphaOuter('channel', 'channel'); rOut = channelR(inp, ctx.g, ctx.steps).value; }
+      else a = core.alphaOuter('general', ctx.env, ctx.obj === 'pipe' ? opt(inp, 'orientation') : 'horizontal', emissivityOf(ctx.mat), num(inp, 'wind', false));
+      ctx.coefficients.push({ name: 'Коэффициент теплоотдачи α', value: fmt(a.value, 1), unit: 'Вт/(м²·°C)', source: a.ref });
+      var p = stateParams(ctx, { tIn: tm, tOut: tAir, alpha: a.value, rOuter: rOut, rInner: plasticWallR(inp, ctx.g, ctx.steps) });
+      var sol = core.solveThickness(function (d) { return R - core.heatState(p, d).Rtot; });
+      var r = finishThickness(ctx, sol, p, { tMin: Math.min(t1, t2, tAir), condition: 'R_из + R_н' + (rOut ? ' + R_кан + R_гр' : '') + ' = R', ref: 'СП 61, (В.28), (В.20)' });
+      r.explanation = r.notNeeded ? 'Даже без изоляции температура изменится не больше чем до ' + fmt(t2, 1) + ' °C.'
+        : 'Чтобы на участке ' + fmt(L, 0) + ' м температура изменилась не больше чем с ' + fmt(t1, 1) + ' до ' + fmt(t2, 1) + ' °C, нужно ' + fmt(r.thicknessCalc_mm, 1) + ' мм изоляции.';
+      ctx.refs.push('СП 61.13330.2012, п. 6.4, приложение В.2.2');
+      return r;
+    }
+  });
+
+  // 6. По заданному тепловому потоку (СП 61 п. 6.2)
+  CALCS.push({
+    id: 'givenFlux', icon: 'adjustments', title: 'Заданные теплопотери',
+    short: 'Толщина по допустимым теплопотерям, заданным вами',
+    objects: ['pipe', 'duct', 'flat'],
+    envs: function (o) { return o === 'pipe' ? ['outdoor', 'room', 'tunnel', 'channel'] : ['outdoor', 'room', 'tunnel']; },
+    fields: function (i) {
+      var f = objFields(i).concat(['env', 'tIn', 'tAir', 'qGiven']);
+      if (i.env === 'outdoor') f.push('wind');
+      if (i.env === 'channel') f = f.concat(['depthH', 'chanB', 'chanH', 'soil']);
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) { return normLike(ctx, 'given'); }
+  });
+
+  // 7. Проверка заданной толщины
+  CALCS.push({
+    id: 'check', icon: 'clipboard-check', title: 'Проверить готовую изоляцию',
+    short: 'Теплопотери и температура поверхности при известной толщине',
+    objects: ['pipe', 'duct', 'flat'],
+    envs: function (o) { return o === 'pipe' ? ['outdoor', 'room', 'tunnel', 'channel'] : ['outdoor', 'room', 'tunnel']; },
+    fields: function (i) {
+      var f = objFields(i).concat(['env', 'tIn', 'tAir', 'thicknessGiven', 'hours']);
+      if (i.env === 'room' || i.env === 'tunnel') f.push('rh');
+      if (i.env === 'outdoor') f.push('wind');
+      if (i.env === 'channel') f = f.concat(['depthH', 'chanB', 'chanH', 'soil']);
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) {
+      var inp = ctx.inp, tIn = num(inp, 'tIn'), tAir = airDefault(inp, ctx.env), dMm = num(inp, 'thicknessGiven');
+      checkTemps(ctx.mat, Math.min(tIn, tAir), Math.max(tIn, tAir), ctx.warnings);
+      var a, rOut = 0, ch = null;
+      if (ctx.env === 'channel') { a = core.alphaOuter('channel', 'channel'); ch = channelR(inp, ctx.g, ctx.steps); rOut = ch.value; }
+      else a = core.alphaOuter('general', ctx.env, ctx.obj === 'pipe' ? opt(inp, 'orientation') : 'horizontal', emissivityOf(ctx.mat), num(inp, 'wind', false));
+      ctx.coefficients.push({ name: 'Коэффициент теплоотдачи α', value: fmt(a.value, 1), unit: 'Вт/(м²·°C)', source: a.ref });
+      var p = stateParams(ctx, { tIn: tIn, tOut: tAir, alpha: a.value, rOuter: rOut, rInner: plasticWallR(inp, ctx.g, ctx.steps) });
+      var st = core.heatState(p, dMm / 1000), st0 = core.heatState(p, 0);
+      ctx.steps.push({ title: 'Теплопередача', formula: ctx.g.geom === 'cyl' ? 'q = (t_в − t_н) / (ln(D/d)/(2πλ) + 1/(π·D·α)' + (rOut ? ' + R_кан + R_гр' : '') + ')' : 'q = (t_в − t_н) / (δ/λ + 1/α)',
+        values: 'δ = ' + fmt(dMm, 0) + ' мм, λ = ' + fmt(st.lambda, 4) + ' при t_ср = ' + fmt(st.tm, 1) + ' °C', result: 'q = ' + fmt(Math.abs(st.q), 2) + ' ' + unitQ(ctx.g) + ', t_пов = ' + fmt(st.tSurf, 1) + ' °C', ref: 'СП 61, (В.1)–(В.4), (В.16), (В.17)' });
+      var extra = [
+        { label: 'Теплопотери', value: fmt(Math.abs(st.q), 1) + ' ' + unitQ(ctx.g) },
+        { label: 'Температура поверхности изоляции', value: fmt(st.tSurf, 1) + ' °C' },
+        { label: 'Теплопотери без изоляции', value: fmt(Math.abs(st0.q), 1) + ' ' + unitQ(ctx.g) },
+        { label: 'Снижение теплопотерь', value: fmt((1 - Math.abs(st.q) / Math.abs(st0.q)) * 100, 0) + ' %' }
+      ];
+      if (ch) extra.push({ label: 'Температура воздуха в канале', value: fmt(st.tAmbLocal, 1) + ' °C' });
+      var verdicts = [];
+      try {
+        var nm = core.normFor(ctx.env, opt(inp, 'hours'), tIn, ctx.g.geom === 'cyl' ? { type: 'cyl', dn: ctx.g.dn } : { type: 'flat' });
+        var qCmp = nm.type === 'surface' && ctx.g.geom === 'cyl' ? Math.abs(st.q) / (PI * st.D) : Math.abs(st.q);
+        var okN = qCmp <= nm.value + 1e-9;
+        verdicts.push({ ok: okN, text: (okN ? 'Соответствует' : 'Не соответствует') + ' норме СП 61: ' + fmt(qCmp, 1) + ' ' + nm.unit + (okN ? ' ≤ ' : ' > ') + fmt(nm.value, 1) + ' ' + nm.unit + ' (' + nm.ref + ')' });
+      } catch (e) { if (!(e instanceof core.CalcError)) throw e; }
+      if (tIn < tAir && (ctx.env === 'room' || ctx.env === 'tunnel')) {
+        var rh = num(inp, 'rh'), dT = core.deltaTCondensation(tAir, rh);
+        if (dT) { var okC = tAir - st.tSurf <= dT.value + 1e-9; verdicts.push({ ok: okC, text: okC ? 'Конденсата на поверхности не будет (поверхность ' + fmt(st.tSurf, 1) + ' °C не холоднее ' + fmt(tAir - dT.value, 1) + ' °C)' : 'Возможен конденсат: поверхность ' + fmt(st.tSurf, 1) + ' °C холоднее допустимой ' + fmt(tAir - dT.value, 1) + ' °C' }); }
+      }
+      ctx.refs.push('СП 61.13330.2012, приложение В.1, В.2');
+      return { checkOnly: true, thicknessGiven_mm: dMm, atGiven: st, extra: extra, verdicts: verdicts,
+        explanation: 'При изоляции ' + fmt(dMm, 0) + ' мм теплопотери составят ' + fmt(Math.abs(st.q), 1) + ' ' + unitQ(ctx.g) + ', поверхность будет ' + fmt(st.tSurf, 1) + ' °C.' };
+    }
+  });
+
+  // 8. Конденсация внутри воздуховода / газохода (СП 61 п. 6.9, В.2.6)
+  CALCS.push({
+    id: 'ductInternal', icon: 'wind', title: 'Защитить воздуховод изнутри',
+    short: 'Тёплый влажный воздух не будет конденсироваться внутри воздуховода',
+    objects: ['duct'],
+    envs: function () { return ['outdoor', 'room']; },
+    fields: function (i) {
+      var f = objFields(i).concat(['env', 'tIn', 'gasRh', 'gasSpeed', 'tAir']);
+      if (i.env === 'outdoor') f.push('wind');
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) {
+      var inp = ctx.inp, tIn = num(inp, 'tIn'), tAir = airDefault(inp, ctx.env), rh = num(inp, 'gasRh'), v = num(inp, 'gasSpeed');
+      var tDew = core.dewPoint(tIn, rh), tCrit = tDew + 2;
+      if (!(tIn > tCrit)) fail('saturated', 'Воздух внутри почти насыщен влагой (точка росы ' + fmt(tDew, 1) + ' °C): конденсат возможен при любой изоляции.', 'gasRh');
+      if (!(tAir < tCrit)) fail('temps', 'При температуре снаружи ' + fmt(tAir, 1) + ' °C стенка не охладится до точки росы — изоляция по этому условию не нужна.', 'tAir');
+      checkTemps(ctx.mat, tAir, tIn, ctx.warnings);
+      var dEq = ctx.g.dEq, ai = core.alphaInnerDuct(tIn, v, dEq);
+      var ao = core.alphaOuter('general', ctx.env, 'horizontal', emissivityOf(ctx.mat), num(inp, 'wind', false));
+      var rIn = ctx.g.geom === 'cyl' ? 1 / (ai.value * PI * ctx.g.d) : 1 / ai.value;
+      ctx.coefficients.push({ name: 'Внутренняя теплоотдача α_вн', value: fmt(ai.value, 2), unit: 'Вт/(м²·°C)', source: ai.ref + ', Re = ' + fmt(ai.re, 0) + ', свойства воздуха — табл. В.7' });
+      ctx.coefficients.push({ name: 'Наружная теплоотдача α_н', value: fmt(ao.value, 1), unit: 'Вт/(м²·°C)', source: ao.ref });
+      ctx.steps.push({ title: 'Минимальная температура внутренней стенки', formula: 't_ст = t_росы + 2 °C', values: 't = ' + fmt(tIn, 1) + ' °C, φ = ' + fmt(rh, 0) + ' % → t_росы = ' + fmt(tDew, 2) + ' °C', result: 't_ст = ' + fmt(tCrit, 2) + ' °C',
+        ref: 'СП 61, п. В.2.6 (запас 2–3 °C над точкой росы, принято 2 °C); точка росы — по давлению насыщенного пара (формула типа Магнуса)' });
+      var p = stateParams(ctx, { tIn: tIn, tOut: tAir, alpha: ao.value, rInner: function () { return { value: rIn }; } });
+      var sol = core.solveThickness(function (d) { return tCrit - core.heatState(p, d).tWallOut; });
+      var r = finishThickness(ctx, sol, p, { protective: true, tMin: tAir,
+        condition: ctx.g.geom === 'cyl' ? 'ln(D/d) = 2πλ·[(t_ст − t_н)/(α_вн·π·d·(t_в − t_ст)) − 1/(α_н·π·D)]' : 'δ = λ·[(t_ст − t_н)/(α_вн·(t_в − t_ст)) − 1/α_н]',
+        ref: 'СП 61, (В.34в), (В.34г)' });
+      r.explanation = r.notNeeded ? 'Стенка и без изоляции останется теплее точки росы — конденсата внутри не будет.'
+        : 'Чтобы внутренняя стенка была теплее точки росы (' + fmt(tDew, 1) + ' °C) с запасом 2 °C, нужно ' + fmt(r.thicknessCalc_mm, 1) + ' мм изоляции.';
+      r.extra = [{ label: 'Точка росы воздуха внутри', value: fmt(tDew, 1) + ' °C' },
+                 { label: 'Температура внутренней стенки при принятой толщине', value: r.atAccepted ? fmt(r.atAccepted.tWallOut, 1) + ' °C' : '—' }];
+      ctx.refs.push('СП 61.13330.2012, п. 6.9, приложение В.2.6');
+      return r;
+    }
+  });
+
+  // 9. Тепловая сеть надземной прокладки: подающий и обратный трубопроводы (СП 61 п. 6.1.6, В.3.1)
+  CALCS.push({
+    id: 'network', icon: 'building-factory', title: 'Тепловая сеть',
+    short: 'Подающая и обратная трубы надземной сети по нормам СП 61',
+    objects: ['pipe'],
+    envs: function () { return ['outdoor', 'room', 'tunnel']; },
+    fields: function (i) {
+      var f = ['object', 'od', 'orientation', 'env', 'regime'];
+      if (i.regime === 'custom') f.push('tSupply');
+      f = f.concat(['operation']);
+      if (i.operation === 'season') f.push('seasonDays');
+      f.push('tAir');
+      if (i.env === 'outdoor') f.push('wind');
+      return f.concat(matFields(i));
+    },
+    compute: function (ctx) {
+      var inp = ctx.inp, reg = opt(inp, 'regime'), sp = UF.data.sp61, tS, tR = 50;
+      inp.pipeMaterial = 'steel';
+      if (reg === 'custom') { tS = num(inp, 'tSupply'); }
+      else { var rr = sp.networkRegimes.filter(function (x) { return x.id === reg; })[0]; tS = rr.supply; tR = rr.ret; }
+      var op = opt(inp, 'operation'), hours = 'gt5000';
+      if (op === 'season') hours = num(inp, 'seasonDays') * 24 > 5000 ? 'gt5000' : 'le5000';
+      var tAir = airDefault(inp, ctx.env);
+      ctx.steps.push({ title: 'Расчётные температуры теплоносителя', values: 'подающий ' + fmt(tS, 0) + ' °C, обратный ' + fmt(tR, 0) + ' °C; время работы ' + (hours === 'gt5000' ? '> 5000 ч' : '≤ 5000 ч'),
+        ref: reg === 'custom' ? 'СП 61, п. 6.1.6 а (количественное регулирование — максимальная температура)' : 'СП 61, табл. 15, табл. В.5' });
+      var parts = [];
+      [['Подающий трубопровод', tS], ['Обратный трубопровод', tR]].forEach(function (pr) {
+        var sub = { inp: Object.assign({}, inp, { tIn: pr[1], hours: hours, tAir: tAir }), obj: 'pipe', env: ctx.env, steps: [], warnings: ctx.warnings, coefficients: [], refs: [], mat: ctx.mat, g: ctx.g };
+        var r = normLike(sub, 'norm');
+        ctx.steps.push({ title: pr[0], values: '' });
+        sub.steps.forEach(function (s) { ctx.steps.push(s); });
+        sub.coefficients.forEach(function (c) { c.name = pr[0] + ': ' + c.name; ctx.coefficients.push(c); });
+        r.label = pr[0]; parts.push(r);
+      });
+      var res = parts[0];
+      res.parts = parts;
+      res.explanation = 'Подающая труба (' + fmt(tS, 0) + ' °C): ' + (parts[0].notNeeded ? 'изоляция по нормам не требуется' : 'расчётная толщина ' + fmt(parts[0].thicknessCalc_mm, 1) + ' мм') +
+        '; обратная (' + fmt(tR, 0) + ' °C): ' + (parts[1].notNeeded ? 'не требуется' : fmt(parts[1].thicknessCalc_mm, 1) + ' мм') + '.';
+      ctx.refs.push('СП 61.13330.2012, п. 6.1.5, 6.1.6, табл. 15, приложение В.3.1');
+      return res;
+    }
+  });
+
+  // Общая часть расчётов «по нормам» и «по заданному потоку»
+  function normLike(ctx, mode) {
+    var inp = ctx.inp, tIn = num(inp, 'tIn'), tAir = airDefault(inp, ctx.env);
+    if (tIn === tAir) fail('temps', 'Температуры вещества и среды совпадают — теплового потока нет.', 'tIn');
+    checkTemps(ctx.mat, Math.min(tIn, tAir), Math.max(tIn, tAir), ctx.warnings);
+    var geomKey = ctx.g.geom === 'cyl' ? { type: 'cyl', dn: ctx.g.dn } : { type: 'flat' };
+    var norm;
+    if (mode === 'norm') {
+      norm = core.normFor(ctx.env, opt(inp, 'hours'), tIn, geomKey);
+      ctx.coefficients.push({ name: 'Норма плотности теплового потока', value: fmt(norm.value, 1), unit: norm.unit, source: norm.ref });
+    } else {
+      var q = num(inp, 'qGiven');
+      norm = { type: ctx.g.geom === 'cyl' ? 'linear' : 'surface', value: q, unit: unitQ(ctx.g), ref: 'задано пользователем' };
+      ctx.coefficients.push({ name: 'Допустимые теплопотери', value: fmt(q, 1), unit: norm.unit, source: 'задано пользователем (СП 61, п. 6.2)' });
+    }
+    var a, rOut = 0, ch = null;
+    if (ctx.env === 'channel') { a = core.alphaOuter('channel', 'channel'); ch = channelR(inp, ctx.g, ctx.steps); rOut = ch.value; }
+    else a = core.alphaOuter('general', ctx.env, ctx.obj === 'pipe' ? opt(inp, 'orientation') : 'vertical', emissivityOf(ctx.mat), num(inp, 'wind', false));
+    ctx.coefficients.push({ name: 'Коэффициент теплоотдачи α', value: fmt(a.value, 1), unit: 'Вт/(м²·°C)', source: a.ref + ' (' + ctx.mat.covering.label + ')' });
+    var p = stateParams(ctx, { tIn: tIn, tOut: tAir, alpha: a.value, rOuter: rOut, rInner: plasticWallR(inp, ctx.g, ctx.steps) });
+    var surfaceOnCyl = norm.type === 'surface' && ctx.g.geom === 'cyl';
+    var g = function (d) {
+      var st = core.heatState(p, d);
+      return (surfaceOnCyl ? Math.abs(st.q) / (PI * st.D) : Math.abs(st.q)) - norm.value;
+    };
+    var sol = core.solveThickness(g);
+    var cond = surfaceOnCyl ? '|q_L| / (π·D) = q_F (норма на 1 м² поверхности изоляции, СП 61 (1))'
+      : ctx.g.geom === 'cyl' ? 'ln(D/d) = 2πλ·[(t_в − t_н)/q_L' + (rOut ? ' − R_кан − R_гр' : '') + ' − R_н], R_н = 1/(π·D·α)' : 'δ = λ·[(t_в − t_н)/q_F − 1/α]';
+    var r = finishThickness(ctx, sol, p, { allowLower: mode === 'norm', tMin: Math.min(tIn, tAir), condition: cond, ref: ctx.g.geom === 'cyl' ? 'СП 61, (В.19), (В.20)' : 'СП 61, (В.18)' });
+    var qAcc = r.atAccepted ? Math.abs(r.atAccepted.q) : null;
+    r.explanation = r.notNeeded ? 'Теплопотери и без изоляции не превышают ' + fmt(norm.value, 1) + ' ' + norm.unit + '.'
+      : 'Чтобы теплопотери не превышали ' + (mode === 'norm' ? 'норму СП 61 — ' : '') + fmt(norm.value, 1) + ' ' + norm.unit + ', нужно ' + fmt(r.thicknessCalc_mm, 1) + ' мм изоляции.';
+    r.extra = [{ label: (mode === 'norm' ? 'Норма' : 'Допустимые теплопотери'), value: fmt(norm.value, 1) + ' ' + norm.unit },
+               { label: 'Теплопотери при принятой толщине', value: qAcc !== null ? fmt(qAcc, 1) + ' ' + unitQ(ctx.g) : '—' },
+               { label: 'Температура поверхности при принятой толщине', value: r.atAccepted ? fmt(r.atAccepted.tSurf, 1) + ' °C' : '—' }];
+    if (ch && r.atAccepted) r.extra.push({ label: 'Температура воздуха в канале', value: fmt(r.atAccepted.tAmbLocal, 1) + ' °C' });
+    if (ch && r.atAccepted && r.atAccepted.D) {
+      var Dacc = r.atAccepted.D;
+      if (ch.b < Dacc + 0.3 || ch.h < Dacc + 0.15) ctx.warnings.push({ code: 'channel-size',
+        text: 'Изолированная труба Ø' + fmt(Dacc * 1000, 0) + ' мм тесно размещается в канале ' + fmt(ch.b, 2) + '×' + fmt(ch.h, 2) + ' м. Рекомендуемые зазоры для монтажа: ширина ≥ ' + fmt(Dacc + 0.3, 2) + ' м, высота ≥ ' + fmt(Dacc + 0.15, 2) + ' м.' });
+    }
+    ctx.refs.push(mode === 'norm' ? 'СП 61.13330.2012, п. 6.1, приложение В.2.1' : 'СП 61.13330.2012, п. 6.2, приложение В.2.1');
+    return r;
+  }
+
+  function objFields(i) {
+    var o = i.object, f = ['object'];
+    if (o === 'pipe') { f = f.concat(['pipeMaterial', 'od']); if (i.pipeMaterial === 'plastic') f.push('wallPlastic'); f.push('orientation'); }
+    if (o === 'duct') { f.push('ductShape'); f = f.concat(i.ductShape === 'rect' ? ['ductA', 'ductB'] : ['ductD']); }
+    if (o === 'tank') { f.push('tankShape', 'tankD'); if (i.tankShape !== 'sphere') f.push('tankH'); f.push('tankWall', 'tankFill'); }
+    return f;
+  }
+  function matFields() { return ['materialId', 'lambdaModel', 'product', 'covering']; }
+
+  core.CALCS = CALCS;
+  core.getCalc = function (id) { return CALCS.filter(function (c) { return c.id === id; })[0]; };
+
+  // Нормализованный объект для интерфейса: какие поля показывать сейчас
+  core.visibleFields = function (calcId, inp) {
+    var c = core.getCalc(calcId), obj = inp.object && c.objects.indexOf(inp.object) >= 0 ? inp.object : c.objects[0];
+    var i2 = Object.assign({}, inp, { object: obj });
+    var envs = c.envs(obj);
+    i2.env = inp.env && envs.indexOf(inp.env) >= 0 ? inp.env : envs[0];
+    return { fields: c.fields(i2), object: obj, env: i2.env, envs: envs, objects: c.objects };
+  };
+
+  // ---------------------------------------------------------------- точка входа
+  core.calculate = function (calcId, input) {
+    var calc = core.getCalc(calcId);
+    if (!calc) return { ok: false, errors: [{ code: 'calc', text: 'Неизвестный тип расчёта' }] };
+    var inp = Object.assign({}, input);
+    try {
+      var ctx = context(inp, calc);
+      inp.object = ctx.obj; inp.env = ctx.env;
+      var r = calc.compute(ctx);
+      return { ok: true, calcId: calcId, calcTitle: calc.title, input: inp, result: r, material: ctx.mat.m, lambdaModel: ctx.mat.model,
+        covering: ctx.mat.covering, geometry: ctx.g, steps: ctx.steps, coefficients: ctx.coefficients, warnings: ctx.warnings, refs: ctx.refs,
+        explanation: r.explanation };
+    } catch (e) {
+      if (e instanceof core.CalcError) return { ok: false, calcId: calcId, input: inp, errors: [{ code: e.code, text: e.text, field: e.field }] };
+      throw e;
+    }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/ui/icons.js */
+/* Собственный набор линейных иконок (SVG, 24×24) */
+(function (root) {
+  var UF = root.UF = root.UF || {};
+  var P = {
+    droplet: '<path d="M12 3.5c3.2 4.1 5.5 7.3 5.5 10.2a5.5 5.5 0 0 1-11 0C6.5 10.8 8.8 7.6 12 3.5z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+    flame: '<path d="M12 3c.5 3.4 4.8 5.4 4.8 10.1A4.8 4.8 0 0 1 12 18a4.8 4.8 0 0 1-4.8-4.9c0-2.3 1.2-3.8 2.4-4.9.2 1.5.9 2.6 2 3 0-2.6-.3-5.1.4-8.2z"/><path d="M5 21h14"/>',
+    'hand-stop': '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V12"/><path d="M14 11.5V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-.6a5 5 0 0 1-4.2-2.3L4 14.2a1.5 1.5 0 0 1 2.4-1.8L8 14"/>',
+    snowflake: '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M10 4.5l2 2 2-2M10 19.5l2-2 2 2M4 10l2.7-.7-.7-2.7M20 14l-2.7.7.7 2.7M4 14l2.7.7-.7 2.7M20 10l-2.7-.7.7-2.7"/>',
+    temperature: '<path d="M10 14.8V5a2 2 0 0 1 4 0v9.8a4 4 0 1 1-4 0z"/><path d="M12 11v6"/><path d="M17 6h3M17 10h3"/>',
+    adjustments: '<path d="M5 4v6M5 14v6M12 4v2M12 10v10M19 4v10M19 18v2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="19" cy="16" r="2"/>',
+    'clipboard-check': '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6v2H9z"/><path d="M9 13l2 2 4-4"/>',
+    wind: '<path d="M3 9h11a3 3 0 1 0-3-3"/><path d="M3 13h15a3 3 0 1 1-3 3"/><path d="M3 17h7"/>',
+    'building-factory': '<path d="M3 20V10l5 3V10l5 3V10l5 3V6h3v14z"/><path d="M3 20h18M7 17h2M12 17h2M17 17h2"/>',
+    history: '<path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5"/><path d="M12 8v4l3 2"/>',
+    file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+    save: '<path d="M5 4h11l3 3v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/>',
+    back: '<path d="M15 5l-7 7 7 7"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+    alert: '<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',
+    x: '<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+    download: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 20h14"/>',
+    upload: '<path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 20h14"/>',
+    trash: '<path d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+    copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+    pipe: '<path d="M3 9h18M3 15h18"/><ellipse cx="21" cy="12" rx="1" ry="3"/>'
+  };
+  UF.icon = function (name, cls) {
+    return '<svg class="icon' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (P[name] || P.info) + '</svg>';
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>/* src/ui/app.js */
+/* UNIONFLEX CALCULATOR — интерфейс. Расчёты выполняет UF.core (без DOM). */
+(function () {
+  var core = UF.core, F = core.FIELDS, icon = UF.icon, fmt = core.fmt;
+  // Веб-версия (страница по ссылке): печать и скачивание файлов средой запрещены
+  var EMBED = !!window.UF_EMBED;
+  var $main = document.getElementById('main');
+  var $mbar = document.getElementById('mbar');
+
+  // ---------------------------------------------------------------- хранилище (с защитой)
+  var store = {
+    get: function (k, def) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  };
+  var state = {
+    engineer: store.get('uf.engineer', false),
+    inputs: store.get('uf.inputs.v1', {}),
+    objectName: store.get('uf.objectName', ''),
+    last: null
+  };
+  function history() { return store.get('uf.history.v1', []); }
+  function saveHistory(h) { return store.set('uf.history.v1', h); }
+
+  // ---------------------------------------------------------------- утилиты
+  function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function el(html) { var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+  function debounce(fn, ms) { var t; return function () { clearTimeout(t); t = setTimeout(fn, ms); }; }
+  function today() { var d = new Date(); return d.toLocaleDateString('ru-RU'); }
+  function mm(x) { return x === null || x === undefined ? '—' : (Math.abs(x - Math.round(x)) < 1e-9 ? String(Math.round(x)) : fmt(x, 1)); }
+
+  // ---------------------------------------------------------------- маршрутизация
+  function route() {
+    var h = location.hash.replace(/^#\/?/, '');
+    var parts = h.split('/');
+    if (document.body.classList.contains('show-report')) closeReport();
+    window.scrollTo(0, 0);
+    if (parts[0] === 'calc' && core.getCalc(parts[1])) renderCalc(parts[1]);
+    else if (parts[0] === 'history') renderHistory();
+    else renderHome();
+  }
+  window.addEventListener('hashchange', route);
+
+  // ---------------------------------------------------------------- тема: дневная / ночная
+  var $theme = document.getElementById('themeBtn');
+  var darkMq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function isDark() {
+    var t = document.documentElement.getAttribute('data-theme');
+    return t ? t === 'dark' : !!(darkMq && darkMq.matches);
+  }
+  var SUN = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
+  function paintTheme() {
+    var dark = isDark();
+    $theme.innerHTML = (dark ? SUN : MOON) + '<span class="hide-sm">' + (dark ? 'Дневной' : 'Ночной') + '</span>';
+    $theme.title = dark ? 'Включить дневной режим (светлый фон)' : 'Включить ночной режим (тёмный фон)';
+    $theme.setAttribute('aria-label', $theme.title);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = dark ? '#171e27' : '#0b6e8a';
+  }
+  $theme.addEventListener('click', function () {
+    var next = isDark() ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('uf.theme', next); } catch (e) {}
+    paintTheme();
+  });
+  if (darkMq && darkMq.addEventListener) darkMq.addEventListener('change', paintTheme);
+  paintTheme();
+
+  var $eng = document.getElementById('engToggle');
+  $eng.checked = state.engineer;
+  $eng.addEventListener('change', function () {
+    state.engineer = $eng.checked; store.set('uf.engineer', state.engineer);
+    if (currentCalc) { renderForm(); compute(); }
+  });
+
+  // ---------------------------------------------------------------- главная
+  function renderHome() {
+    currentCalc = null; $mbar.hidden = true;
+    var recent = history().slice(0, 3);
+    $main.innerHTML =
+      '<section class="hero"><h1>Рассчитайте необходимую толщину теплоизоляции</h1>' +
+      '<p>Выберите задачу — калькулятор подберёт толщину изоляции UNIONFLEX по СП 61.13330 и покажет готовое изделие.</p></section>' +
+      '<div class="section-title">Что нужно сделать</div>' +
+      '<div class="goals">' + core.CALCS.map(function (c) {
+        return '<button class="goal" data-calc="' + c.id + '"><span class="goal-ic">' + icon(c.icon) + '</span><span><b>' + esc(c.title) + '</b><span>' + esc(c.short) + '</span></span></button>';
+      }).join('') + '</div>' +
+      (recent.length ? '<div class="section-title">Недавние расчёты</div><div class="recent">' + recent.map(histRow).join('') + '</div>' : '') +
+      '<div class="note-box">' + icon('info') + ' Расчёт выполняется по методике СП 61.13330.2012 «Тепловая изоляция оборудования и трубопроводов» (с Изм. 1, 2). Характеристики материалов — по данным производителя UNIONFLEX и СП 61. Результат носит рекомендательный характер и не заменяет проект.</div>';
+    $main.querySelectorAll('[data-calc]').forEach(function (b) { b.onclick = function () { location.hash = '#/calc/' + b.dataset.calc; }; });
+    bindHistRows($main);
+  }
+
+  function histRow(h) {
+    return '<div class="recent-item" data-open="' + h.id + '">' + icon(core.getCalc(h.calcId) ? core.getCalc(h.calcId).icon : 'file') +
+      '<div class="meta"><b>' + esc(h.objectName || h.title) + '</b><div class="muted">' + esc(h.title) + ' · ' + esc(h.date) + '</div></div>' +
+      '<div class="big">' + esc(h.summary) + '</div></div>';
+  }
+  function bindHistRows(scope) {
+    scope.querySelectorAll('[data-open]').forEach(function (r) {
+      r.onclick = function () { openFromHistory(r.dataset.open); };
+    });
+  }
+  function openFromHistory(id) {
+    var h = history().filter(function (x) { return x.id === id; })[0];
+    if (!h) return;
+    state.inputs[h.calcId] = Object.assign({}, h.input);
+    state.objectName = h.objectName || '';
+    store.set('uf.inputs.v1', state.inputs); store.set('uf.objectName', state.objectName);
+    location.hash = '#/calc/' + h.calcId;
+  }
+
+  // ---------------------------------------------------------------- экран расчёта
+  var currentCalc = null, lastResult = null;
+
+  function renderCalc(id) {
+    currentCalc = core.getCalc(id);
+    if (!state.inputs[id]) state.inputs[id] = {};
+    $main.innerHTML =
+      '<div class="crumbs"><a class="btn ghost small" href="#/">' + icon('back') + 'Все задачи</a></div>' +
+      '<div class="calc-head"><span class="goal-ic">' + icon(currentCalc.icon) + '</span><div><h1>' + esc(currentCalc.title) + '</h1><p>' + esc(currentCalc.short) + '</p></div></div>' +
+      '<div class="calc-grid"><div id="formCol"></div><aside class="card result" id="resPanel" aria-live="polite"></aside></div>';
+    renderForm();
+    compute();
+  }
+
+  function inputs() { return state.inputs[currentCalc.id]; }
+
+  function renderForm() {
+    var inp = inputs();
+    var vf = core.visibleFields(currentCalc.id, inp);
+    inp.object = vf.object; inp.env = vf.env;
+    var groups = { object: [], conditions: [], material: [] };
+    vf.fields.forEach(function (f) {
+      var d = F[f]; if (!d) return;
+      if (d.engineer && !state.engineer) return;
+      groups[d.group].push(f);
+    });
+    var col = document.getElementById('formCol');
+    var scrollY = window.scrollY;
+    col.innerHTML =
+      stepCard(1, 'Объект', '<div class="field wide"><label for="f_objectName">Название объекта для отчёта <span class="muted">(необязательно)</span></label>' +
+        '<div class="inp"><input id="f_objectName" type="text" maxlength="120" placeholder="Например: ИТП, корпус 2, трубопровод ХВС" value="' + esc(state.objectName) + '"></div></div>' +
+        groups.object.map(function (f) { return fieldHtml(f, inp, vf); }).join('')) +
+      stepCard(2, 'Условия', groups.conditions.map(function (f) { return fieldHtml(f, inp, vf); }).join('')) +
+      stepCard(3, 'Материал', groups.material.map(function (f) { return fieldHtml(f, inp, vf); }).join('')) +
+      '<div id="engCol"></div>';
+    bindForm(col);
+    window.scrollTo(0, scrollY);
+  }
+
+  function stepCard(n, title, body) {
+    return '<section class="card step"><div class="step-h"><span class="step-n">' + n + '</span><h2>' + title + '</h2></div><div class="fields">' + body + '</div></section>';
+  }
+
+  function label(f, inp) {
+    var c = currentCalc.id, env = inp.env;
+    if (f === 'tIn') {
+      if (c === 'tempChange') return 'Начальная температура вещества';
+      if (c === 'freezing') return 'Начальная температура воды';
+      if (c === 'ductInternal') return 'Температура воздуха внутри воздуховода';
+      if (c === 'check' || c === 'givenFlux' || c === 'norm') return 'Температура вещества (теплоносителя)';
+    }
+    if (f === 'tAir') {
+      if (env === 'channel') return 'Температура грунта на глубине оси';
+      if (c === 'ductInternal') return 'Температура снаружи воздуховода';
+    }
+    if (f === 'tEnd') return 'Допустимая температура в конце участка';
+    return F[f].label;
+  }
+  function helpFor(f, inp) {
+    var c = currentCalc.id, env = inp.env;
+    if (f === 'tAir') {
+      if (env === 'room') return 'По умолчанию 20 °C (СП 61, п. 6.1.5, 6.3). Укажите, если в помещении иначе.';
+      if (env === 'tunnel') return 'По умолчанию 40 °C (СП 61, п. 6.1.5).';
+      if (env === 'channel') return 'Среднегодовая температура грунта на глубине оси трубы. Если перекрытие канала заглублено не более чем на 0,7 м — температура наружного воздуха (СП 61, п. 6.1.5 г).';
+      if (c === 'norm' || c === 'givenFlux' || c === 'check') return 'Среднегодовая температура наружного воздуха по СП 131.13330 (п. 6.1.5 а).';
+      if (c === 'network') return 'Круглый год — среднегодовая; только отопительный период — средняя температура периода со среднесуточной ≤ 8 °C (СП 131.13330, СП 61 п. 6.1.5).';
+      if (c === 'freezing') return 'Температура наиболее холодной пятидневки обеспеченностью 0,92 по СП 131.13330 (СП 61, п. 6.3).';
+      if (c === 'surface') return 'Средняя максимальная температура наиболее жаркого месяца по СП 131.13330 (СП 61, п. 6.7.2).';
+      if (c === 'tempChange') return 'Для улицы — температура холодной пятидневки 0,92 (СП 61, п. 6.3, 6.4).';
+    }
+    if (f === 'tIn' && c === 'condensation') return 'Температура холодного вещества в трубе (ёмкости, воздуховоде).';
+    return F[f].help;
+  }
+  function unitFor(f, inp) {
+    if (f === 'qGiven') {
+      var round = inp.object === 'pipe' || (inp.object === 'duct' && inp.ductShape !== 'rect' && !(+inp.ductD >= 2000));
+      return round ? 'Вт/м' : 'Вт/м²';
+    }
+    if (f === 'flow') return { kgh: 'кг/ч', m3h: 'м³/ч', ms: 'м/с' }[inp.flowUnit || 'kgh'];
+    return F[f].unit;
+  }
+
+  function fieldHtml(f, inp, vf) {
+    var d = F[f], v = inp[f], id = 'f_' + f, help = helpFor(f, inp);
+    var lbl = '<label for="' + id + '">' + esc(label(f, inp)) + (help ? ' <span class="help" tabindex="0" aria-label="Подсказка">?<span class="tip">' + esc(help) + '</span></span>' : '') + '</label>';
+    var mat = currentMaterial(inp);
+    if (f === 'object') return seg(f, 'Что изолируем', vf.objects.map(function (o) { return [o, core.OBJECT_LABELS[o]]; }), vf.object, true);
+    if (f === 'env') return seg(f, 'Где находится', vf.envs.map(function (e) { return [e, core.ENV_LABELS[e]]; }), vf.env, true);
+    if (f === 'materialId') {
+      var cur = inp.materialId || d.default;
+      return '<div class="field wide"><span class="lbl">Материал</span><div class="mats">' + UF.data.materials.map(function (m) {
+        var lm = m.lambdaModels[m.defaultLambda];
+        return '<button type="button" class="mat" data-f="materialId" data-v="' + m.id + '" aria-pressed="' + (m.id === cur) + '"><b>' + esc(m.name) + '</b><span>' + esc(m.short) + '</span>' +
+          '<div class="props">' + esc(core.lambdaFormula(lm)) + ' · ' + m.tempRange[0] + '…+' + m.tempRange[1] + ' °C · ' + esc(m.fire.split(',')[0]) + '</div></button>';
+      }).join('') + '</div></div>';
+    }
+    if (f === 'lambdaModel') {
+      var keys = Object.keys(mat.lambdaModels);
+      if (keys.length < 2) return '';
+      var curM = inp.lambdaModel && mat.lambdaModels[inp.lambdaModel] ? inp.lambdaModel : mat.defaultLambda;
+      return seg(f, 'Теплопроводность материала', keys.map(function (k) { return [k, mat.lambdaModels[k].label + ' — ' + core.lambdaFormula(mat.lambdaModels[k])]; }), curM, true);
+    }
+    if (f === 'product') {
+      var opts = [['auto', 'Подобрать автоматически']];
+      if (mat.products.tube && inp.object === 'pipe') opts.push(['tube', 'Трубка']);
+      if (mat.products.roll) opts.push(['roll', 'Рулон']);
+      var curP = opts.some(function (o) { return o[0] === inp.product; }) ? inp.product : 'auto';
+      return seg(f, 'Вид изделия', opts, curP, false);
+    }
+    if (f === 'covering') {
+      var list = coveringsFor(mat, inp);
+      var curC = list.indexOf(inp.covering) >= 0 ? inp.covering : 'none';
+      return '<div class="field wide">' + lbl + '<div class="inp"><select id="' + id + '" data-f="covering">' + list.map(function (c) {
+        var cv = UF.data.coverings[c];
+        return '<option value="' + c + '"' + (c === curC ? ' selected' : '') + '>' + esc(cv.label) + ' — ' + (cv.emissivity === 'low' ? 'металлическая поверхность' : 'неметаллическая поверхность') + '</option>';
+      }).join('') + '</select></div></div>';
+    }
+    if (f === 'soil') {
+      var curS = inp.soil || d.default;
+      return '<div class="field wide">' + lbl + '<div class="inp"><select id="' + id + '" data-f="soil">' + UF.data.sp61.soils.map(function (s) {
+        return '<option value="' + s.id + '"' + (s.id === curS ? ' selected' : '') + '>' + esc(s.label) + ' — λ = ' + fmt(s.value, 2) + '</option>';
+      }).join('') + '</select></div><span class="fhint">СП 61, табл. В.6</span></div>';
+    }
+    if (d.type === 'choice') {
+      var o = d.options, curV = v || d.default;
+      if (o.length <= 4) return seg(f, label(f, inp), o, curV, o.length > 2 && f === 'regime');
+      return '<div class="field">' + lbl + '<div class="inp"><select id="' + id + '" data-f="' + f + '">' + o.map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === curV ? ' selected' : '') + '>' + esc(x[1]) + '</option>'; }).join('') + '</select></div></div>';
+    }
+    // число
+    var ph = '';
+    if (f === 'tAir' && (inp.env === 'room' || inp.env === 'tunnel') && currentCalc.id !== 'ductInternal') ph = (inp.env === 'room' ? '20' : '40') + ' — по СП 61';
+    else if (d.default !== undefined) ph = String(d.default).replace('.', ',') + ' — по умолчанию';
+    else if (f === 'wallPlastic') ph = 'по SDR 41';
+    var list2 = '';
+    if (f === 'od') {
+      var pm = inp.pipeMaterial || 'steel';
+      list2 = '<datalist id="dl_od">' + UF.data.pipes.presets[pm].map(function (x) { return '<option value="' + String(x).replace('.', ',') + '">'; }).join('') + '</datalist>';
+    }
+    var extra = '';
+    if (f === 'surfaceLimit') {
+      var lim = UF.data.sp61.surfaceTempLimits.filter(function (x) { return x.env === (inp.env === 'outdoor' ? 'outdoor' : 'room'); });
+      extra = '<div class="chips">' + lim.map(function (x) { return '<button type="button" class="chip" data-set="surfaceLimit" data-v="' + x.value + '">' + esc(x.label) + ': ' + x.value + ' °C</button>'; }).join('') + '</div>';
+    }
+    var unit = unitFor(f, inp);
+    return '<div class="field' + (f === 'surfaceLimit' ? ' wide' : '') + '" data-field="' + f + '">' + lbl +
+      '<div class="inp"><input id="' + id + '" data-f="' + f + '" inputmode="decimal" autocomplete="off"' + (f === 'od' ? ' list="dl_od"' : '') +
+      ' value="' + esc(v === undefined || v === null ? '' : String(v).replace('.', ',')) + '" placeholder="' + esc(ph) + '">' +
+      (unit ? '<span class="unit">' + esc(unit) + '</span>' : '') + '</div>' + list2 + extra + '<span class="ferr" hidden></span></div>';
+  }
+
+  function seg(f, title, options, cur, wide) {
+    return '<div class="field' + (wide ? ' wide' : '') + '" data-field="' + f + '"><span class="lbl">' + esc(title) + '</span><div class="seg" role="group" aria-label="' + esc(title) + '">' +
+      options.map(function (o) { return '<button type="button" data-f="' + f + '" data-v="' + o[0] + '" aria-pressed="' + (o[0] === cur) + '">' + esc(o[1]) + '</button>'; }).join('') + '</div></div>';
+  }
+
+  function currentMaterial(inp) {
+    var id = inp.materialId || F.materialId.default;
+    return UF.data.materials.filter(function (m) { return m.id === id; })[0] || UF.data.materials[0];
+  }
+  function coveringsFor(mat, inp) {
+    var p = inp.product || 'auto', out = [];
+    Object.keys(mat.products).forEach(function (k) {
+      if (p !== 'auto' && k !== p) return;
+      if (k === 'tube' && inp.object !== 'pipe') return;
+      mat.products[k].coverings.forEach(function (c) { if (out.indexOf(c) < 0) out.push(c); });
+    });
+    if (!out.length) out = ['none'];
+    return out;
+  }
+
+  var computeSoon = debounce(function () { compute(); }, 250);
+
+  function bindForm(scope) {
+    scope.querySelectorAll('button[data-f]').forEach(function (b) {
+      b.onclick = function () { inputs()[b.dataset.f] = b.dataset.v; persist(); renderForm(); compute(); };
+    });
+    scope.querySelectorAll('select[data-f]').forEach(function (s) {
+      s.onchange = function () { inputs()[s.dataset.f] = s.value; persist(); renderForm(); compute(); };
+    });
+    scope.querySelectorAll('input[data-f]').forEach(function (i) {
+      i.oninput = function () {
+        var raw = i.value.trim();
+        if (raw === '') delete inputs()[i.dataset.f]; else inputs()[i.dataset.f] = raw;
+        persist(); clearFieldError(i.dataset.f); computeSoon();
+        if (i.dataset.f === 'ductD' || i.dataset.f === 'od') { /* единицы q могут поменяться */ }
+      };
+    });
+    scope.querySelectorAll('[data-set]').forEach(function (b) {
+      b.onclick = function () { inputs()[b.dataset.set] = b.dataset.v; persist(); renderForm(); compute(); };
+    });
+    var on = document.getElementById('f_objectName');
+    if (on) on.oninput = function () { state.objectName = on.value; store.set('uf.objectName', state.objectName); };
+  }
+  function persist() { store.set('uf.inputs.v1', state.inputs); }
+
+  function clearFieldError(f) {
+    var w = document.querySelector('[data-field="' + f + '"]');
+    if (w) { w.classList.remove('invalid'); var e = w.querySelector('.ferr'); if (e) e.hidden = true; }
+  }
+  function markFieldError(f, text) {
+    var w = document.querySelector('[data-field="' + f + '"]');
+    if (!w) return false;
+    w.classList.add('invalid');
+    var e = w.querySelector('.ferr'); if (e) { e.textContent = text; e.hidden = false; }
+    return true;
+  }
+
+  // Незаполненные обязательные поля (чтобы не показывать ошибку, пока пользователь не ввёл данные)
+  function missing() {
+    var inp = inputs(), vf = core.visibleFields(currentCalc.id, inp), out = [];
+    vf.fields.forEach(function (f) {
+      var d = F[f];
+      if (!d || d.type !== 'number' || d.optional || d.default !== undefined) return;
+      if (d.engineer && !state.engineer) return;
+      if (f === 'tAir' && (vf.env === 'room' || vf.env === 'tunnel') && currentCalc.id !== 'ductInternal') return;
+      var v = inp[f];
+      if (v === undefined || v === null || String(v).trim() === '') out.push(label(f, Object.assign({}, inp, { env: vf.env })));
+    });
+    return out;
+  }
+
+  // ---------------------------------------------------------------- расчёт и результат
+  function compute() {
+    if (!currentCalc) return;
+    document.querySelectorAll('.field.invalid').forEach(function (w) { w.classList.remove('invalid'); var e = w.querySelector('.ferr'); if (e) e.hidden = true; });
+    var panel = document.getElementById('resPanel');
+    var miss = missing();
+    if (miss.length) { lastResult = null; panel.innerHTML = emptyPanel(miss); renderEng(null); updateMbar(null); return; }
+    var res;
+    try { res = core.calculate(currentCalc.id, inputs()); }
+    catch (e) { res = { ok: false, errors: [{ text: 'Внутренняя ошибка расчёта: ' + e.message }] }; console.error(e); }
+    lastResult = res;
+    if (!res.ok) {
+      res.errors.forEach(function (er) { if (er.field) markFieldError(er.field, er.text); });
+      panel.innerHTML = '<div class="res-label">Результат</div>' + res.errors.map(function (er) { return msg('err', er.text); }).join('');
+      renderEng(null); updateMbar(null);
+      return;
+    }
+    panel.innerHTML = resultHtml(res);
+    bindResult(panel, res);
+    renderEng(res);
+    updateMbar(res);
+  }
+
+  function msg(kind, text) { return '<div class="msg ' + kind + '">' + icon(kind === 'err' ? 'x' : kind === 'warn' ? 'alert' : kind === 'ok' ? 'check' : 'info') + '<span>' + esc(text) + '</span></div>'; }
+
+  function emptyPanel(miss) {
+    return '<div class="res-label">Результат</div><div class="res-big" style="color:var(--text-3)">— <small>мм</small></div>' +
+      '<div class="empty-res">Заполните данные, и толщина рассчитается автоматически:<ul>' + miss.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>';
+  }
+
+  function mainBlock(r, res, compact) {
+    if (r.notNeeded) {
+      var s = '<div class="res-label">' + (r.label ? esc(r.label) : 'Рекомендуемая толщина') + '</div><div class="res-big">0 <small>мм</small></div>' +
+        '<div class="res-product">Изоляция по этому условию не требуется</div>';
+      if (r.selection && r.selection.suggestion) s += '<div class="res-sub">Для защиты поверхности можно применить: ' + esc(r.selection.suggestion.text) + '</div>';
+      return s;
+    }
+    var sel = r.selection;
+    return '<div class="res-label">' + (r.label ? esc(r.label) : 'Рекомендуемая толщина') + '</div>' +
+      '<div class="res-big">' + mm(r.thicknessAccepted_mm) + ' <small>мм</small></div>' +
+      '<div class="res-product">' + esc(sel.product.code) + '</div>' +
+      (compact ? '' : '<div class="res-sub">' + esc(res.material.name) + ', ' + esc(res.covering.label.split(' — ')[0].toLowerCase()) + '</div>') +
+      '<dl class="kv"><dt>Расчётная толщина</dt><dd>' + fmt(r.thicknessCalc_mm, 1) + ' мм</dd><dt>Принятая стандартная толщина</dt><dd>' + mm(r.thicknessAccepted_mm) + ' мм</dd>' +
+      (sel.product.layers.length > 1 ? '<dt>Слои</dt><dd>' + sel.product.layers.join(' + ') + ' мм</dd>' : '') + '</dl>';
+  }
+
+  function resultHtml(res) {
+    var r = res.result, h = '';
+    if (r.checkOnly) {
+      h += '<div class="res-label">Теплопотери</div><div class="res-big">' + fmt(Math.abs(r.atGiven.q), 1) + ' <small>' + (res.geometry.geom === 'cyl' ? 'Вт/м' : 'Вт/м²') + '</small></div>' +
+        '<div class="res-product">Поверхность изоляции: ' + fmt(r.atGiven.tSurf, 1) + ' °C</div><div class="res-sub">' + esc(res.material.name) + ', ' + mm(r.thicknessGiven_mm) + ' мм</div>';
+      h += '<dl class="kv">' + r.extra.map(function (x) { return '<dt>' + esc(x.label) + '</dt><dd>' + esc(x.value) + '</dd>'; }).join('') + '</dl>';
+      h += r.verdicts.map(function (v) { return msg(v.ok ? 'ok' : 'warn', v.text); }).join('');
+    } else if (r.parts) {
+      h += '<div class="parts">' + r.parts.map(function (p) { return '<div class="part">' + mainBlock(p, res, true) + '</div>'; }).join('') + '</div>';
+      h += '<div class="res-sub" style="margin-top:8px">' + esc(res.material.name) + '</div>';
+    } else {
+      h += mainBlock(r, res);
+      if (r.extra) h += '<dl class="kv" style="margin-top:0;border-top:0">' + r.extra.map(function (x) { return '<dt>' + esc(x.label) + '</dt><dd>' + esc(x.value) + '</dd>'; }).join('') + '</dl>';
+    }
+    h += '<div class="explain">' + esc(res.explanation) + '</div>';
+    var sel = r.parts ? r.parts[0].selection : r.selection;
+    var allSel = r.parts ? r.parts.map(function (p) { return p.selection; }) : [r.selection];
+    allSel.forEach(function (s) { if (!s) return; (s.alternatives || []).forEach(function (a) { h += msg('info', a.text); }); (s.notes || []).forEach(function (n) { h += msg('info', n); }); });
+    res.warnings.forEach(function (w) { h += msg('warn', w.text); });
+    if (res.lambdaModel && res.lambdaModel.type === 'constant') h += msg('info', 'Теплопроводность ' + res.material.name + ' принята постоянной (' + fmt(res.lambdaModel.value, 3) + ' Вт/(м·°C)) — зависимость от температуры производителем не опубликована.');
+    h += '<div class="actions"><button class="btn primary" id="btnPdf">' + icon('file') + (EMBED ? 'Показать отчёт' : 'Сформировать PDF') + '</button>' +
+      '<button class="btn" id="btnSave">' + icon('save') + 'Сохранить</button><a class="btn" href="#/history">' + icon('history') + 'История</a></div>';
+    return h;
+  }
+
+  function bindResult(panel, res) {
+    panel.querySelector('#btnPdf').onclick = function () { printReport(res); };
+    panel.querySelector('#btnSave').onclick = function (e) {
+      var ok = saveToHistory(res);
+      e.currentTarget.innerHTML = icon(ok ? 'check' : 'x') + (ok ? 'Сохранено' : 'Не удалось сохранить');
+    };
+  }
+
+  function summaryOf(res) {
+    var r = res.result;
+    if (r.checkOnly) return fmt(Math.abs(r.atGiven.q), 1) + (res.geometry.geom === 'cyl' ? ' Вт/м' : ' Вт/м²');
+    if (r.parts) return r.parts.map(function (p) { return mm(p.thicknessAccepted_mm); }).join(' / ') + ' мм';
+    return mm(r.thicknessAccepted_mm) + ' мм';
+  }
+
+  function updateMbar(res) {
+    $mbar.hidden = !currentCalc;
+    if (!currentCalc) return;
+    $mbar.innerHTML = '<div><div class="l">' + (res ? (res.result.checkOnly ? 'Теплопотери' : 'Рекомендуемая толщина') : 'Результат') + '</div><div class="v">' + (res ? esc(summaryOf(res)) : '—') + '</div></div>' +
+      '<button class="btn primary small" id="mbarGo">Подробнее</button>';
+    document.getElementById('mbarGo').onclick = function () { document.getElementById('resPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  }
+
+  // ---------------------------------------------------------------- инженерный режим
+  function inputRows(res) {
+    var inp = res.input, vf = core.visibleFields(res.calcId, inp), rows = [];
+    rows.push(['Тип расчёта', res.calcTitle]);
+    vf.fields.forEach(function (f) {
+      var d = F[f]; if (!d) return;
+      var v = inp[f], shown;
+      if (f === 'object') shown = core.OBJECT_LABELS[inp.object];
+      else if (f === 'env') shown = core.ENV_LABELS[inp.env];
+      else if (f === 'materialId') shown = res.material.name;
+      else if (f === 'lambdaModel') shown = res.lambdaModel.label;
+      else if (f === 'covering') shown = res.covering.label;
+      else if (f === 'soil') { var s = UF.data.sp61.soils.filter(function (x) { return x.id === (v || d.default); })[0]; shown = s ? s.label + ' (λ = ' + fmt(s.value, 2) + ')' : ''; }
+      else if (d.type === 'choice') { var o = (d.options || []).filter(function (x) { return x[0] === (v || d.default); })[0]; shown = o ? o[1] : (v || ''); }
+      else if (v === undefined || v === '') {
+        if (f === 'tAir' && inp.env === 'room') shown = '20 °C (по умолчанию, СП 61)';
+        else if (f === 'tAir' && inp.env === 'tunnel') shown = '40 °C (по умолчанию, СП 61)';
+        else if (d.default !== undefined) shown = String(d.default).replace('.', ',') + ' ' + (unitFor(f, inp) || '') + ' (по умолчанию)';
+        else shown = '—';
+      } else shown = String(v).replace('.', ',') + ' ' + (unitFor(f, inp) || '');
+      rows.push([label(f, inp), shown]);
+    });
+    return rows;
+  }
+
+  function engHtml(res, forReport) {
+    var h = '<h3>Исходные данные</h3><table class="tbl"><tbody>' + inputRows(res).map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td class="num">' + esc(r[1]) + '</td></tr>'; }).join('') + '</tbody></table>';
+    h += '<h3>Коэффициенты и характеристики</h3><table class="tbl"><thead><tr><th>Величина</th><th>Значение</th><th>Источник</th></tr></thead><tbody>' +
+      res.coefficients.map(function (c) { return '<tr><td>' + esc(c.name) + '</td><td class="num">' + esc(c.value) + ' ' + esc(c.unit) + '</td><td class="src">' + esc(c.source) + '</td></tr>'; }).join('') + '</tbody></table>';
+    h += '<h3>Ход расчёта</h3><ol class="steps">' + res.steps.map(function (s) {
+      return '<li><b>' + esc(s.title) + '</b>' + (s.formula ? '<code class="formula">' + esc(s.formula) + '</code>' : '') +
+        (s.values ? '<div>' + esc(s.values) + '</div>' : '') + (s.result ? '<div><b>' + esc(s.result) + '</b></div>' : '') + (s.ref ? '<div class="src">' + esc(s.ref) + '</div>' : '') + '</li>';
+    }).join('') + '</ol>';
+    var r = res.result;
+    var parts = r.parts || (r.checkOnly ? [] : [r]);
+    if (parts.length) {
+      h += '<h3>Промежуточные результаты</h3><table class="tbl"><thead><tr><th></th><th>При расчётной толщине</th><th>При принятой толщине</th></tr></thead><tbody>';
+      parts.forEach(function (p) {
+        var a = p.atCalc, b = p.atAccepted, u = res.geometry.geom === 'cyl' ? 'Вт/м' : 'Вт/м²';
+        if (p.label) h += '<tr><td colspan="3"><b>' + esc(p.label) + '</b></td></tr>';
+        h += '<tr><td>Толщина, мм</td><td class="num">' + fmt(p.thicknessCalc_mm, 2) + '</td><td class="num">' + mm(p.thicknessAccepted_mm) + '</td></tr>';
+        h += '<tr><td>Теплопотери, ' + u + '</td><td class="num">' + (a ? fmt(Math.abs(a.q), 2) : '—') + '</td><td class="num">' + (b ? fmt(Math.abs(b.q), 2) : '—') + '</td></tr>';
+        h += '<tr><td>Температура поверхности, °C</td><td class="num">' + (a ? fmt(a.tSurf, 2) : '—') + '</td><td class="num">' + (b ? fmt(b.tSurf, 2) : '—') + '</td></tr>';
+        h += '<tr><td>λ при t_ср, Вт/(м·°C)</td><td class="num">' + (a ? fmt(a.lambda, 4) + ' (' + fmt(a.tm, 1) + ' °C)' : '—') + '</td><td class="num">' + (b ? fmt(b.lambda, 4) + ' (' + fmt(b.tm, 1) + ' °C)' : '—') + '</td></tr>';
+        h += '<tr><td>R изоляции / R поверхности</td><td class="num">' + (a ? fmt(a.Riz, 4) + ' / ' + fmt(a.Rn, 4) : '—') + '</td><td class="num">' + (b ? fmt(b.Riz, 4) + ' / ' + fmt(b.Rn, 4) : '—') + '</td></tr>';
+      });
+      h += '</tbody></table>';
+      var sel = parts[0].selection;
+      if (sel && sel.rule) h += '<p class="src">Правило выбора: ' + esc(sel.rule) + '. Альтернатива «на 3 мм меньше» допускается только при расчёте по нормам и по температуре поверхности.</p>';
+    }
+    h += '<h3>Нормативное основание</h3><ul>' + res.refs.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') +
+      '<li>Методика расчёта: СП 61.13330.2012, приложение В (описание — в документации программы, CALCULATION_METHOD.md)</li></ul>';
+    return h;
+  }
+
+  function renderEng(res) {
+    var c = document.getElementById('engCol');
+    if (!c) return;
+    if (!state.engineer || !res || !res.ok) { c.innerHTML = state.engineer && !res ? '' : ''; return; }
+    c.innerHTML = '<section class="card eng"><div class="step-h"><span class="step-n">' + icon('adjustments') + '</span><h2>Инженерный расчёт</h2></div>' + engHtml(res) + '</section>';
+  }
+
+  // ---------------------------------------------------------------- PDF (печать)
+  function closeReport() {
+    document.body.classList.remove('show-report');
+    var r = document.getElementById('report'); r.innerHTML = ''; r.setAttribute('aria-hidden', 'true');
+  }
+  function printReport(res) {
+    var r = res.result, title = state.objectName || 'Объект не указан';
+    var mat = res.material, lm = res.lambdaModel;
+    var mainRes;
+    if (r.checkOnly) mainRes = '<div><div>Теплопотери</div><div class="v">' + fmt(Math.abs(r.atGiven.q), 1) + ' ' + (res.geometry.geom === 'cyl' ? 'Вт/м' : 'Вт/м²') + '</div></div><div>Толщина изоляции: <b>' + mm(r.thicknessGiven_mm) + ' мм</b><br>Температура поверхности: <b>' + fmt(r.atGiven.tSurf, 1) + ' °C</b></div>';
+    else {
+      var ps = r.parts || [r];
+      mainRes = ps.map(function (p) {
+        return '<div>' + (p.label ? '<div>' + esc(p.label) + '</div>' : '<div>Рекомендуемая толщина</div>') + '<div class="v">' + mm(p.thicknessAccepted_mm) + ' мм</div>' +
+          '<div>Расчётная: <b>' + fmt(p.thicknessCalc_mm, 1) + ' мм</b><br>Принятая: <b>' + mm(p.thicknessAccepted_mm) + ' мм</b><br>' + (p.notNeeded ? 'Изоляция не требуется' : esc(p.selection.product.code)) + '</div></div>';
+      }).join('');
+    }
+    var html = '<div class="rep">' +
+      '<div class="rep-head"><div><h1>UNIONFLEX — РАСЧЁТ ТЕПЛОИЗОЛЯЦИИ</h1><div>' + esc(res.calcTitle) + '</div></div><div class="rep-date">Дата: ' + today() + '<br>UNIONFLEX CALCULATOR</div></div>' +
+      '<h2>Объект</h2><table><tr><th style="width:30%">Объект</th><td>' + esc(title) + '</td></tr><tr><th>Изолируемый элемент</th><td>' + esc(core.OBJECT_LABELS[res.input.object]) + ', ' + esc(res.geometry.label) + ', ' + esc(core.ENV_LABELS[res.input.env]) + '</td></tr></table>' +
+      '<h2>Итог</h2><div class="rep-result">' + mainRes + '</div><p>' + esc(res.explanation) + '</p>' +
+      (res.warnings.length ? '<p><b>Предупреждения:</b> ' + res.warnings.map(function (w) { return esc(w.text); }).join(' ') + '</p>' : '') +
+      '<h2>Материал</h2><table><tr><th style="width:30%">Материал</th><td>' + esc(mat.name) + ' — ' + esc(mat.short) + '</td></tr>' +
+      '<tr><th>Покрытие</th><td>' + esc(res.covering.label) + ' (' + (res.covering.emissivity === 'low' ? 'металлическая поверхность' : 'неметаллическая поверхность') + ')</td></tr>' +
+      '<tr><th>Теплопроводность</th><td>' + esc(core.lambdaFormula(lm)) + ', Вт/(м·°C) — ' + esc(lm.source) + '</td></tr>' +
+      '<tr><th>Температура применения</th><td>' + mat.tempRange[0] + '…+' + mat.tempRange[1] + ' °C. ' + esc(mat.tempNotes || '') + '</td></tr>' +
+      '<tr><th>Плотность</th><td>' + esc(mat.density) + '</td></tr><tr><th>Сопротивление диффузии пара μ</th><td>' + esc(mat.mu) + '</td></tr>' +
+      '<tr><th>Пожарно-технические характеристики</th><td>' + esc(mat.fire) + '</td></tr></table>' +
+      '<h2>Расчёт</h2>' + engHtml(res, true).replace(/<h3>/g, '<h3 style="font-size:10.5pt;margin:10px 0 4px">') +
+      '<h2>Нормативная методика</h2><p>Расчёт выполнен по СП 61.13330.2012 «Тепловая изоляция оборудования и трубопроводов» (актуализированная редакция СНиП 41-03-2003, с Изменениями N 1, 2), приложение В. Принятая толщина — по п. 6.12. Характеристики материалов — по данным производителя UNIONFLEX и СП 61.13330.</p>' +
+      '<div class="foot">Документ сформирован программой UNIONFLEX CALCULATOR ' + today() + '. Результат носит рекомендательный характер и должен быть проверен проектировщиком.</div></div>';
+    var $rep = document.getElementById('report');
+    if (EMBED) {
+      // Веб-версия: печать запрещена средой — показываем отчёт на экране
+      $rep.innerHTML = '<div class="rep-bar"><button class="btn" id="repBack">' + icon('back') + 'К расчёту</button>' +
+        '<span class="muted">Сохранить отчёт в PDF можно в файловой версии программы (UNIONFLEX_CALCULATOR.html). Здесь — просмотр.</span></div>' + html;
+      $rep.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('show-report'); window.scrollTo(0, 0);
+      document.getElementById('repBack').onclick = closeReport;
+      return;
+    }
+    $rep.innerHTML = html;
+    var old = document.title;
+    document.title = ('UNIONFLEX_расчёт_' + (state.objectName || res.calcTitle) + '_' + new Date().toISOString().slice(0, 10)).replace(/[\\/:*?"<>|]/g, '_');
+    setTimeout(function () { window.print(); setTimeout(function () { document.title = old; }, 500); }, 50);
+  }
+
+  // ---------------------------------------------------------------- история
+  function saveToHistory(res) {
+    var h = history();
+    h.unshift({ id: String(Date.now()), date: new Date().toLocaleString('ru-RU'), calcId: res.calcId, title: res.calcTitle,
+      objectName: state.objectName, input: Object.assign({}, inputs()), summary: summaryOf(res) });
+    return saveHistory(h.slice(0, 200));
+  }
+
+  function renderHistory() {
+    currentCalc = null; $mbar.hidden = true;
+    var h = history();
+    $main.innerHTML = '<div class="crumbs"><a class="btn ghost small" href="#/">' + icon('back') + 'Все задачи</a></div>' +
+      '<div class="calc-head"><span class="goal-ic">' + icon('history') + '</span><div><h1>Сохранённые расчёты</h1><p>Хранятся в этом браузере. Для переноса на другое устройство используйте экспорт.</p></div></div>' +
+      '<div class="hist-tools">' + (EMBED ? '' : '<button class="btn" id="hExport">' + icon('download') + 'Экспорт в файл</button>') +
+      '<label class="btn" for="hImport">' + icon('upload') + 'Импорт из файла</label><input type="file" id="hImport" accept=".json,application/json" hidden></div>' +
+      '<div id="hMsg"></div>' +
+      (h.length ? '<div class="hist-list">' + h.map(function (x) {
+        return '<div class="hist-item">' + icon(core.getCalc(x.calcId) ? core.getCalc(x.calcId).icon : 'file') + '<div class="meta"><b>' + esc(x.objectName || 'Без названия') + '</b><div class="muted">' + esc(x.title) + ' · ' + esc(x.date) + '</div></div>' +
+          '<div class="big">' + esc(x.summary) + '</div><div class="ops"><button class="btn small" data-open="' + x.id + '">Открыть</button><button class="btn small ghost" data-del="' + x.id + '" aria-label="Удалить">' + icon('trash') + '</button></div></div>';
+      }).join('') + '</div>' : '<div class="note-box">Пока нет сохранённых расчётов. Нажмите «Сохранить» на экране результата.</div>');
+    bindHistRows($main);
+    // Удаление в два нажатия: первое спрашивает, второе удаляет (системные окна подтверждения есть не везде)
+    $main.querySelectorAll('[data-del]').forEach(function (b) {
+      b.onclick = function () {
+        if (b.dataset.armed !== '1') {
+          b.dataset.armed = '1'; b.classList.add('danger'); b.innerHTML = icon('trash') + 'Удалить?';
+          setTimeout(function () { if (b.isConnected && b.dataset.armed === '1') { b.dataset.armed = ''; b.classList.remove('danger'); b.innerHTML = icon('trash'); } }, 4000);
+          return;
+        }
+        saveHistory(history().filter(function (x) { return x.id !== b.dataset.del; })); renderHistory();
+      };
+    });
+    if (!EMBED) document.getElementById('hExport').onclick = function () {
+      var data = { app: 'UNIONFLEX CALCULATOR', version: 1, exported: new Date().toISOString(), items: history() };
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'unionflex_расчёты_' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    };
+    document.getElementById('hImport').onchange = function (e) {
+      var file = e.target.files[0]; if (!file) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        var m = document.getElementById('hMsg');
+        try {
+          var data = JSON.parse(rd.result);
+          if (!data || data.app !== 'UNIONFLEX CALCULATOR' || !Array.isArray(data.items)) throw new Error('bad');
+          var cur = history(), ids = cur.map(function (x) { return x.id; });
+          var add = data.items.filter(function (x) { return x && x.id && x.calcId && core.getCalc(x.calcId) && ids.indexOf(x.id) < 0; });
+          saveHistory(add.concat(cur).slice(0, 500));
+          renderHistory();
+          document.getElementById('hMsg').innerHTML = msg('ok', 'Импортировано расчётов: ' + add.length);
+        } catch (er) { m.innerHTML = msg('err', 'Файл не распознан. Выберите файл, сохранённый кнопкой «Экспорт в файл».'); }
+      };
+      rd.readAsText(file);
+    };
+  }
+
+  window.addEventListener('resize', debounce(function () { if (currentCalc) updateMbar(lastResult && lastResult.ok ? lastResult : null); }, 200));
+  route();
+})();
+
+</script>
 </body>
 </html>
