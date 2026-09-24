@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="UNIONFLEX CALCULATOR — расчёт толщины теплоизоляции UNIONFLEX по СП 61.13330">
+<meta name="theme-color" content="#0b6e8a">
+<title>UNIONFLEX CALCULATOR</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e8a'/%3E%3Ctext x='16' y='21' font-family='Arial' font-weight='700' font-size='13' fill='white' text-anchor='middle'%3EUF%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/app.css">
+<script>
+  // Тема до отрисовки, чтобы не было вспышки: сохранённый выбор, иначе — настройка системы
+  try { var t = localStorage.getItem('uf.theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#/" aria-label="На главную">
+      <span class="brand-mark">UF</span>
+      <span class="brand-name">UNIONFLEX CALCULATOR<small>Расчёт толщины теплоизоляции</small></span>
+    </a>
+    <button type="button" class="btn ghost small theme-btn" id="themeBtn"></button>
+    <label class="toggle" title="Показывать формулы, коэффициенты и промежуточные значения">
+      <input type="checkbox" id="engToggle"><span class="switch"></span><span class="tl">Инженерный режим</span>
+    </label>
+    <a class="btn ghost small hide-sm" href="#/history" aria-label="История расчётов"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5"/><path d="M12 8v4l3 2"/></svg>История</a>
+  </div>
+</header>
+
+<main id="main">
+  <noscript><p>Для работы калькулятора включите JavaScript в браузере.</p></noscript>
+</main>
+
+<div class="mbar" id="mbar" hidden></div>
+<div id="report" aria-hidden="true"></div>
+
+<script src="src/data/sp61.js"></script>
+<script src="src/data/materials.js"></script>
+<script src="src/data/pipes.js"></script>
+<script src="src/core/base.js"></script>
+<script src="src/core/selection.js"></script>
+<script src="src/core/calcs.js"></script>
+<script src="src/ui/icons.js"></script>
+<script src="src/ui/app.js"></script>
+</body>
+</html>
